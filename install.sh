@@ -49,7 +49,7 @@ if [ -f "$(dirname "$0")/workflows/speckit.breakdown.md" ]; then
 else
     # Remote installation
     echo "📝 Downloading speckit.breakdown workflow..."
-    curl -fsSL "https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/workflows/speckit.breakdown.md" -o "$WORKFLOW_FILE"
+    curl -fsSL "https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/workflows/speckit.breakdown.md" -o "$WORKFLOW_FILE"
 fi
 
 # Make it executable (not needed for .md, but good practice)

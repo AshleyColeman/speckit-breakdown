@@ -25,7 +25,7 @@ Takes your complete project plan (with all features mixed together) and intellig
 cd /path/to/your/project
 
 # Run the installer
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
 ```
 
 Or manual installation:
@@ -262,8 +262,8 @@ See the `examples/` directory for complete examples:
 
 ## Support
 
-- Issues: https://github.com/YOUR_USERNAME/speckit-breakdown/issues
-- Discussions: https://github.com/YOUR_USERNAME/speckit-breakdown/discussions
+- Issues: https://github.com/AshleyColeman/speckit-breakdown/issues
+- Discussions: https://github.com/AshleyColeman/speckit-breakdown/discussions
 
 ## License
 
