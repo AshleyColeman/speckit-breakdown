@@ -8,17 +8,25 @@
 
 ## 🚀 Quick Install (For Anyone)
 
-### One-Command Installation
+### Interactive Installation
 
 ```bash
 # Navigate to your project
 cd /path/to/your/project
 
-# Install SpecKit Breakdown
-curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
+# Download and run the interactive installer
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh -o /tmp/sb-install.sh
+chmod +x /tmp/sb-install.sh
+/tmp/sb-install.sh
+rm /tmp/sb-install.sh
 ```
 
-That's it! The `/speckit.breakdown` command is now available in your project.
+**One-liner:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh -o /tmp/sb-install.sh && chmod +x /tmp/sb-install.sh && /tmp/sb-install.sh && rm /tmp/sb-install.sh
+```
+
+The installer will show you a menu to select your IDE (Windsurf, Cursor, VS Code, or Other).
 
 ---
 

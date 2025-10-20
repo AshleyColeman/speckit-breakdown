@@ -24,8 +24,18 @@ Takes your complete project plan (with all features mixed together) and intellig
 # Navigate to your project root
 cd /path/to/your/project
 
-# Run the installer
-curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
+# Download and run the interactive installer
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh -o install-speckit-breakdown.sh
+chmod +x install-speckit-breakdown.sh
+./install-speckit-breakdown.sh
+
+# Clean up after installation
+rm install-speckit-breakdown.sh
+```
+
+**One-liner (downloads, runs, and cleans up):**
+```bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh -o /tmp/sb-install.sh && chmod +x /tmp/sb-install.sh && /tmp/sb-install.sh && rm /tmp/sb-install.sh
 ```
 
 Or manual installation:
