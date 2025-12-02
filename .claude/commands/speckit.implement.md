@@ -46,8 +46,14 @@ You **MUST** consider the user input before proceeding (if not empty).
      - Automatically proceed to step 3
 
 3. Load and analyze the implementation context:
-   - **REQUIRED**: Read tasks.md for the complete task list and execution plan
-   - **REQUIRED**: Read plan.md for tech stack, architecture, and file structure
+   - **CHECK INPUT**: If `$ARGUMENTS` contains a file path (e.g., `tasks/01-T001.md`):
+     - **REQUIRED**: Read that specific file: `read_file $ARGUMENTS`
+     - **REQUIRED**: Use the context within that file as the PRIMARY source of truth.
+     - **OPTIONAL**: Read `plan.md` only if referenced or needed for broader context.
+     - **SKIP**: Do NOT read the full `tasks.md` if a specific task file is provided.
+   - **ELSE (Default Mode)**:
+     - **REQUIRED**: Read tasks.md for the complete task list and execution plan
+     - **REQUIRED**: Read plan.md for tech stack, architecture, and file structure
    - **IF EXISTS**: Read data-model.md for entities and relationships
    - **IF EXISTS**: Read contracts/ for API specifications and test requirements
    - **IF EXISTS**: Read research.md for technical decisions and constraints
