@@ -123,7 +123,21 @@ You **MUST** consider the user input before proceeding (if not empty).
    - **Integration work**: Database connections, middleware, logging, external services
    - **Polish and validation**: Unit tests, performance optimization, documentation
 
-8. Progress tracking and error handling:
+8. **Self-Healing Test Loop** (CRITICAL):
+   - **After writing code**: Automatically run the test suite.
+   - **Detect test command**: Check `plan.md` or `package.json` for the test command (e.g., `npm test`, `pytest`, `cargo test`).
+   - **Execute tests**: Run the command and capture output.
+   - **If tests PASS**: ✓ Mark task complete and proceed.
+   - **If tests FAIL**:
+     1. Read the error output carefully.
+     2. Identify the root cause (syntax error, logic bug, missing import, etc.).
+     3. Fix the code.
+     4. Re-run tests.
+     5. Repeat up to **3 times**.
+     6. If still failing after 3 attempts, report the error and stop.
+   - **Note**: This loop is MANDATORY for all implementation tasks.
+
+9. Progress tracking and error handling:
    - Report progress after each completed task
    - Halt execution if any non-parallel task fails
    - For parallel tasks [P], continue with successful tasks, report failed ones

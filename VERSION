@@ -1,1 +1,7 @@
 1.0.0
+
+# SpecKit Advanced AI Extensions Version Policy
+# - This VERSION file is the canonical source for the project/release version.
+# - Advanced commands such as /speckit.release use this value by default.
+# - A CLI flag or parameter may override this value for special cases
+#   (e.g., hotfixes, backfilled notes), without changing the VERSION file.

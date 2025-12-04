@@ -164,6 +164,20 @@ Files created:
 ### Issue: "Wrong tech stack in features"
 **Fix**: Specify your stack clearly in project spec.
 
+## Advanced AI Extensions (006)
+
+Once you have the core SpecKit breakdown and design flow working, you can opt into
+the advanced AI extensions defined in `specs/006-ai-extensions/`.
+
+- Use these when you want architecture snapshots, context packs, health reports,
+  agent bundles, datasets, dependency graphs, implementation hints, and
+  release notes generated from your SpecKit artifacts.
+- Start with the feature quickstart:
+  - `specs/006-ai-extensions/quickstart.md`
+- Typical flow after your specs/plans/tasks are stable:
+  - `/speckit.arch`, `/speckit.bundle`, `/speckit.health`, `/speckit.agentize`,
+    `/speckit.dataset`, `/speckit.graph`, `/speckit.hint`, `/speckit.release`.
+
 ## Next Steps
 
 1. ✅ Install complete

@@ -1,0 +1,15 @@
+# Generated SpecKit artifacts for advanced AI extensions
+.speckit/
+ai/datasets/
+
+# Generated diagrams and release assets
+/docs/diagrams/*.svg
+/docs/diagrams/*.png
+
+# Editor and OS junk
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
