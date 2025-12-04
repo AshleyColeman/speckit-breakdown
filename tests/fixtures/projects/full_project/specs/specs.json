@@ -1,0 +1,11 @@
+[
+  {
+    "code": "SPEC-001",
+    "feature_code": "FEAT-001",
+    "title": "Bootstrap flow",
+    "path": "specs/001-db-bootstrap/spec.md",
+    "metadata": {
+      "version": "1.0"
+    }
+  }
+]

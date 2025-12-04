@@ -1,0 +1,29 @@
+[
+  {
+    "code": "TASK-100",
+    "feature_code": "FEAT-ERR",
+    "title": "Define invalid spec",
+    "status": "pending",
+    "task_type": "planning",
+    "acceptance": "",
+    "metadata": {}
+  },
+  {
+    "code": "TASK-200",
+    "feature_code": "FEAT-ERR",
+    "title": "Implement broken feature",
+    "status": "pending",
+    "task_type": "implementation",
+    "acceptance": "Missing dependency metadata",
+    "metadata": {}
+  },
+  {
+    "code": "TASK-100",
+    "feature_code": "FEAT-ERR",
+    "title": "Duplicate task code",
+    "status": "pending",
+    "task_type": "implementation",
+    "acceptance": "Duplicate IDs should fail",
+    "metadata": {}
+  }
+]

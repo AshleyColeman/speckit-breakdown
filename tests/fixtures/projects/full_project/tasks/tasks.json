@@ -1,0 +1,30 @@
+[
+  {
+    "code": "TASK-000",
+    "feature_code": "FEAT-001",
+    "title": "Author specification",
+    "status": "done",
+    "task_type": "planning",
+    "acceptance": "Spec authored",
+    "metadata": {
+      "effort": 2
+    },
+    "dependencies": []
+  },
+  {
+    "code": "TASK-001",
+    "feature_code": "FEAT-001",
+    "title": "Implement parser",
+    "status": "pending",
+    "task_type": "implementation",
+    "acceptance": "Parser extracts all data",
+    "metadata": {
+      "effort": 3,
+      "ai_job": {
+        "type": "assistant",
+        "prompt": "Summarize latest project state"
+      }
+    },
+    "dependencies": ["TASK-000"]
+  }
+]

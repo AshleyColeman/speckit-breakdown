@@ -1,0 +1,12 @@
+[
+  {
+    "code": "FEAT-001",
+    "project_code": "PRJ-001",
+    "name": "Bootstrap CLI",
+    "description": "Implements db prepare pipeline",
+    "priority": "P1",
+    "metadata": {
+      "owner": "cli"
+    }
+  }
+]

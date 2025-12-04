@@ -1,0 +1,9 @@
+[
+  {
+    "code": "SPEC-ERR",
+    "feature_code": "FEAT-ERR",
+    "title": "Broken spec",
+    "path": "specs/001-db-bootstrap/spec.md",
+    "metadata": {}
+  }
+]

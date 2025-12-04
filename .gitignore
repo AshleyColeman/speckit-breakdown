@@ -13,3 +13,18 @@ ai/datasets/
 Thumbs.db
 *.swp
 *.tmp
+
+# Python / CLI build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+
+# Local environment + logs
+.env
+.env.*
+*.log

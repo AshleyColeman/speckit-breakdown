@@ -1,0 +1,10 @@
+[
+  {
+    "task_code": "TASK-100",
+    "depends_on": "TASK-200"
+  },
+  {
+    "task_code": "TASK-200",
+    "depends_on": "TASK-100"
+  }
+]

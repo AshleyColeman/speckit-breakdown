@@ -1,0 +1,10 @@
+[
+  {
+    "code": "FEAT-ERR",
+    "project_code": "PRJ-ERR",
+    "name": "Broken Feature",
+    "description": "Used to trigger validation",
+    "priority": "P1",
+    "metadata": {}
+  }
+]
