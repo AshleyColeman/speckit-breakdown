@@ -10,7 +10,7 @@ Processes the entire task list and generates individual markdown files with exec
 ## Steps
 
 1. **Prerequisites Check**
-   - Run `.specify/scripts/bash/check-prerequisites.sh` to validate project structure
+   - Run `.specify/scripts/bash/check-prerequisites.sh --require-tasks` to validate project structure
    - Ensure `tasks.md` exists in the current feature directory
    - Ensure `spec.md` and `plan.md` exist for context
 
@@ -29,6 +29,9 @@ Processes the entire task list and generates individual markdown files with exec
      - Tasks marked `[P]` share the same execution order
      - Tasks in the same phase without dependencies can run in parallel
    - Validate dependency graph (no circular dependencies)
+   - **Crucial**: Explicitly link phases in the `dependencies` list:
+     - All tasks in Phase 2 MUST depend on the last task of Phase 1 (or all of them).
+     - This ensures `speckit.db.prepare` calculates the Step Order correctly.
 
 4. **Generate Task Files**
    - Create JSON payload with all tasks and metadata:
@@ -40,10 +43,16 @@ Processes the entire task list and generates individual markdown files with exec
            "title": "Task title",
            "description": "Full description",
            "order": 1,
+           "order": 1,
            "parallel": true,
-           "phase": "Phase 1"
+           "phase": "Phase 1",
+           "status": "ready",
+           "dependencies": ["T000"]
          }
        ]
+    - **Status Logic**:
+      - If Task Order is 1 (or Phase 1): Set `status: "ready"`
+      - Else: Set `status: "pending"`
      }
      ```
    - Call `.specify/scripts/bash/orchestrate-tasks.sh` with JSON payload

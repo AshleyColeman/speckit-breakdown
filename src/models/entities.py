@@ -44,6 +44,7 @@ class TaskDTO:
     status: str
     task_type: str
     acceptance: str
+    step_order: Optional[int] = None
     metadata: Mapping[str, Any] = field(default_factory=dict)
 
 

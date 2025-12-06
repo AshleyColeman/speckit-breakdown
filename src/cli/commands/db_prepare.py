@@ -10,17 +10,13 @@ from typing import Optional
 
 import typer
 
+from src.lib.error_reporter import ErrorReporter
 from src.lib.config_loader import BootstrapConfig, ConfigLoader
-from src.lib.error_reporter import format_validation_report
 from src.lib.logging import LogFormat, configure_logging
+from src.lib.metrics import emit_bootstrap_summary
 from src.services.bootstrap_options import BootstrapOptions
 from src.services.bootstrap_orchestrator import BootstrapOrchestrator
-from src.services.doc_discovery import DocumentationDiscoveryService
 from src.services.data_store_gateway import DataStoreGateway
-from src.services.upsert_service import UpsertService
-from src.services.task_run_service import TaskRunService
-from src.services.ai_job_service import AIJobService
-from src.services.validation_pipeline import ValidationException
 
 logger = logging.getLogger("speckit.db_prepare")
 
@@ -39,6 +35,11 @@ def register(app: typer.Typer) -> None:
             None,
             "--storage-path",
             help="Path to the SQLite database file (default: .speckit/db.sqlite).",
+        ),
+        db_url: Optional[str] = typer.Option(
+            None,
+            "--db-url",
+            help="PostgreSQL connection string (overrides --storage-path).",
         ),
         log_format: LogFormat = typer.Option(
             "human",
@@ -94,42 +95,41 @@ def register(app: typer.Typer) -> None:
             skip_task_runs=skip_task_runs,
             skip_ai_jobs=skip_ai_jobs,
         )
-        try:
-            _run_bootstrap(config, options)
-        except ValidationException as exc:
-            logger.error("Bootstrap validation failed.")
-            typer.echo(format_validation_report(exc.result))
-            raise typer.Exit(code=1) from exc
+        _run_bootstrap(config, options, db_url)
 
 
-def _run_bootstrap(config: BootstrapConfig, options: BootstrapOptions) -> None:
+def _run_bootstrap(config: BootstrapConfig, options: BootstrapOptions, db_url: Optional[str] = None) -> None:
     """
     Execute the bootstrap pipeline using the configured orchestrator.
     """
 
     logger.info("Bootstrapping Speckit documentation", extra={"docs": str(config.docs_root)})
-    logger.info("Storage target", extra={"storage": str(config.storage_path)})
+    gateway_target = db_url if db_url else config.storage_path
+    if db_url:
+        logger.info("Storage target", extra={"db_url": db_url})
+    else:
+        logger.info("Storage target", extra={"storage": str(config.storage_path)})
 
-    gateway = DataStoreGateway(config.storage_path)
-    orchestrator = BootstrapOrchestrator(
-        discovery_service=DocumentationDiscoveryService(config.docs_root),
-        upsert_service=UpsertService(gateway),
-        task_run_service=TaskRunService(),
-        ai_job_service=AIJobService(),
-        gateway=gateway,
-    )
+    gateway = DataStoreGateway(gateway_target)
+    orchestrator = BootstrapOrchestrator(config.docs_root, gateway)
 
-    summary = orchestrator.run(config=config, options=options)
+    summary = orchestrator.run_bootstrap(options)
+    emit_bootstrap_summary(summary)
 
-    logger.info(
-        "Bootstrap completed",
-        extra={
-            "projects": summary.project_count,
-            "features": summary.feature_count,
-            "specs": summary.spec_count,
-            "tasks": summary.task_count,
-            "dependencies": summary.dependency_count,
-            "task_runs": summary.task_run_count,
-            "ai_jobs": summary.ai_job_count,
-        },
+    if summary.validation_result:
+        report = ErrorReporter.format_report(summary.validation_result)
+        typer.echo(report)
+
+    if not summary.success:
+        typer.echo("Bootstrap failed.")
+        if summary.error_message:
+            typer.echo(summary.error_message)
+        raise typer.Exit(code=1)
+
+    typer.echo("Bootstrap completed successfully.")
+    typer.echo(
+        f"Projects: {summary.project_count}, Features: {summary.feature_count}, "
+        f"Specs: {summary.spec_count}, Tasks: {summary.task_count}, "
+        f"Dependencies: {summary.dependency_count}, "
+        f"Task Runs: {summary.task_run_count}, AI Jobs: {summary.ai_job_count}"
     )

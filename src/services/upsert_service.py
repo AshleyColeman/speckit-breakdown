@@ -1,32 +1,63 @@
-"""
-High-level persistence helpers for bootstrap entities.
-"""
-
 from __future__ import annotations
 
+import logging
 from typing import Sequence
 
-from src.models.entities import FeatureDTO, ProjectDTO, SpecificationDTO, TaskDTO
-from src.services.data_store_gateway import DataStoreGateway
+from src.models.entities import ProjectDTO, FeatureDTO, SpecificationDTO, TaskDTO
+from src.services.matchers.entity_matcher import EntityMatcher
 
+logger = logging.getLogger(__name__)
 
 class UpsertService:
-    """Wraps gateway operations with type-friendly helpers."""
+    """Handles idempotent upsert operations for entities."""
 
-    def __init__(self, gateway: DataStoreGateway) -> None:
+    def __init__(self, matcher: EntityMatcher, gateway: object): # gateway type hint omitted for circular dep risk?
+        self._matcher = matcher
         self._gateway = gateway
 
-    def persist_project(self, project: ProjectDTO) -> None:
-        self._gateway.create_or_update_projects([project])
+    def upsert_projects(self, projects: Sequence[ProjectDTO], force: bool = False) -> None:
+        for project in projects:
+            existing = self._matcher.find_existing_project(project)
+            if existing:
+                if force:
+                    logger.info(f"Forcing update of Project {project.code}")
+                    self._gateway.create_or_update_projects([project])
+                else:
+                    logger.info(f"Skipping Project {project.code} (exists)")
+                    # Could perform diff check here
+            else:
+                self._gateway.create_or_update_projects([project])
 
-    def persist_features(self, features: Sequence[FeatureDTO]) -> None:
-        if features:
-            self._gateway.create_or_update_features(features)
+    def upsert_features(self, features: Sequence[FeatureDTO], force: bool = False) -> None:
+        for feature in features:
+            existing = self._matcher.find_existing_feature(feature)
+            if existing:
+                if force:
+                    logger.info(f"Forcing update of Feature {feature.code}")
+                    self._gateway.create_or_update_features([feature])
+                else:
+                    logger.info(f"Skipping Feature {feature.code} (exists)")
+            else:
+                self._gateway.create_or_update_features([feature])
 
-    def persist_specs(self, specs: Sequence[SpecificationDTO]) -> None:
-        if specs:
-            self._gateway.create_or_update_specs(specs)
+    def upsert_specs(self, specs: Sequence[SpecificationDTO], force: bool = False) -> None:
+        for spec in specs:
+             existing = self._matcher.find_existing_spec(spec)
+             if existing:
+                 if force:
+                     self._gateway.create_or_update_specs([spec])
+                 else:
+                     logger.info(f"Skipping Spec {spec.code}")
+             else:
+                 self._gateway.create_or_update_specs([spec])
 
-    def persist_tasks(self, tasks: Sequence[TaskDTO]) -> None:
-        if tasks:
-            self._gateway.create_or_update_tasks(tasks)
+    def upsert_tasks(self, tasks: Sequence[TaskDTO], force: bool = False) -> None:
+         for task in tasks:
+             existing = self._matcher.find_existing_task(task)
+             if existing:
+                 if force:
+                     self._gateway.create_or_update_tasks([task])
+                 else:
+                     logger.info(f"Skipping Task {task.code}")
+             else:
+                 self._gateway.create_or_update_tasks([task])

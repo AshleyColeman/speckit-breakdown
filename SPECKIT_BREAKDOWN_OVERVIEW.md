@@ -396,6 +396,7 @@ To understand how everything fits together, here is a **conceptual end‑to‑en
 4. **Task Files & Orchestration**
    - `/speckit.taskfile` → generate focused `tasks/Txxx-*.md` files for individual tasks.
    - `/speckit.orchestrate` → turn `tasks.md` into an ordered set of files with explicit `order` + `parallel` metadata, using `orchestrate-tasks.sh`.
+   - `/speckit.db.prepare` → **Sync to System DB**. Parsers all tasks, verifies dependencies, calculates Topological Step Order, and persists to the database.
 
 5. **Tests, Implementation, Sync**
    - `/speckit.testgen <task-file>` → generate tests for the task using stack info from `plan.md`.

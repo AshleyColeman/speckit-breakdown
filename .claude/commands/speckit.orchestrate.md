@@ -20,12 +20,17 @@ You are a **Project Scheduler**. Your goal is to analyze the `tasks.md` file, de
     - Start with Order = 1.
     - Increment Order when moving between sequential tasks or phases.
     - Keep Order constant for a block of parallel tasks.
-5.  **Construct JSON**: Create a JSON list of all tasks.
+    - **Crucial**: Populate `"dependencies": ["PREVIOUS_TASK_ID"]`.
+      - Tasks in Phase 2 MUST depend on tasks in Phase 1.
+5.  **Assign Status**:
+    - If Order = 1: Set `status: "ready"`
+    - Else: Set `status: "pending"`
+6.  **Construct JSON**: Create a JSON list of all tasks.
     ```json
     [
-      {"id": "T001", "description": "Setup repo", "order": 1, "parallel": false, "phase": "Phase 0"},
-      {"id": "T002", "description": "Create API", "order": 2, "parallel": true, "phase": "Phase 1"},
-      {"id": "T003", "description": "Create UI", "order": 2, "parallel": true, "phase": "Phase 1"}
+      {"id": "T001", "description": "Setup repo", "order": 1, "parallel": false, "phase": "Phase 0", "status": "ready", "dependencies": []},
+      {"id": "T002", "description": "Create API", "order": 2, "parallel": true, "phase": "Phase 1", "status": "pending", "dependencies": ["T001"]},
+      {"id": "T003", "description": "Create UI", "order": 2, "parallel": true, "phase": "Phase 1", "status": "pending", "dependencies": ["T001"]}
     ]
     ```
 

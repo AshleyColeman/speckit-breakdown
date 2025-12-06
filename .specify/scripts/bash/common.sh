@@ -154,24 +154,3 @@ EOF
 check_file() { [[ -f "$1" ]] && echo "  ✓ $2" || echo "  ✗ $2"; }
 check_dir() { [[ -d "$1" && -n $(ls -A "$1" 2>/dev/null) ]] && echo "  ✓ $2" || echo "  ✗ $2"; }
 
-log_info() { echo "[speckit] $*" >&2; }
-log_warn() { echo "[speckit][WARN] $*" >&2; }
-log_error() { echo "[speckit][ERROR] $*" >&2; }
-
-json_escape() {
-    local s="$1"
-    s=${s//\\/\\\\}
-    s=${s//"/\\"}
-    s=${s//$'\n'/\\n}
-    s=${s//$'\r'/\\r}
-    echo "$s"
-}
-
-require_git_repo() {
-    if ! has_git; then
-        log_warn "Git repository not detected; skipping git-specific operations"
-        return 1
-    fi
-    return 0
-}
-

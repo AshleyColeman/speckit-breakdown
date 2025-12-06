@@ -1,36 +1,41 @@
 """
-Formatting utilities for surfacing validation issues to operators.
+Error reporting utilities for validation failures.
 """
 
 from __future__ import annotations
 
-from collections import defaultdict
-from typing import Iterable
+from typing import List, Dict
+from src.services.validation_pipeline import ValidationResult, Severity
 
-from src.services.validation_pipeline import Severity, ValidationIssue, ValidationResult
+class ErrorReporter:
+    """Formats validation results for CLI output."""
 
+    @staticmethod
+    def format_report(result: ValidationResult) -> str:
+        """
+        Generates a human-readable report string from a ValidationResult.
+        """
+        lines = []
+        
+        # Group issues by severity
+        errors = [i for i in result.issues if i.severity in (Severity.ERROR, Severity.CRITICAL)]
+        warnings = [i for i in result.issues if i.severity == Severity.WARNING]
 
-def format_validation_report(result: ValidationResult) -> str:
-    """
-    Render validation issues grouped by severity and location.
-    """
+        if errors:
+            lines.append("\n❌ VALIDATION ERRORS (BLOCKING)")
+            lines.append("==============================")
+            for issue in errors:
+                loc = f" [{issue.location}]" if issue.location else ""
+                lines.append(f"• {issue.message}{loc}")
+        
+        if warnings:
+            lines.append("\n⚠️  VALIDATION WARNINGS")
+            lines.append("=======================")
+            for issue in warnings:
+                loc = f" [{issue.location}]" if issue.location else ""
+                lines.append(f"• {issue.message}{loc}")
 
-    grouped: dict[Severity, list[ValidationIssue]] = defaultdict(list)
-    for issue in result.issues:
-        grouped[issue.severity].append(issue)
-
-    lines: list[str] = []
-    order = [Severity.CRITICAL, Severity.ERROR, Severity.WARNING, Severity.INFO]
-    for severity in order:
-        items = grouped.get(severity)
-        if not items:
-            continue
-        lines.append(f"{severity.value.upper()} ({len(items)}):")
-        for issue in items:
-            location = f" [{issue.location}]" if issue.location else ""
-            lines.append(f"  - {issue.message}{location}")
-        lines.append("")
-
-    if not lines:
-        return "No validation issues detected."
-    return "\n".join(lines).rstrip()
+        if not errors and not warnings:
+            lines.append("✅ No validation issues found.")
+            
+        return "\n".join(lines)

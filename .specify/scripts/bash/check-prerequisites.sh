@@ -26,7 +26,6 @@ JSON_MODE=false
 REQUIRE_TASKS=false
 INCLUDE_TASKS=false
 PATHS_ONLY=false
-REQUIRE_ADVANCED=false
 
 for arg in "$@"; do
     case "$arg" in
@@ -41,9 +40,6 @@ for arg in "$@"; do
             ;;
         --paths-only)
             PATHS_ONLY=true
-            ;;
-        --require-advanced)
-            REQUIRE_ADVANCED=true
             ;;
         --help|-h)
             cat << 'EOF'
@@ -110,6 +106,12 @@ if [[ ! -d "$FEATURE_DIR" ]]; then
     exit 1
 fi
 
+if [[ ! -f "$FEATURE_SPEC" ]]; then
+    echo "ERROR: spec.md not found in $FEATURE_DIR" >&2
+    echo "Run /speckit.specify first to create the feature specification." >&2
+    exit 1
+fi
+
 if [[ ! -f "$IMPL_PLAN" ]]; then
     echo "ERROR: plan.md not found in $FEATURE_DIR" >&2
     echo "Run /speckit.plan first to create the implementation plan." >&2
@@ -121,34 +123,6 @@ if $REQUIRE_TASKS && [[ ! -f "$TASKS" ]]; then
     echo "ERROR: tasks.md not found in $FEATURE_DIR" >&2
     echo "Run /speckit.tasks first to create the task list." >&2
     exit 1
-fi
-
-if $REQUIRE_ADVANCED; then
-    missing_advanced=0
-
-    for dir in \
-        "$REPO_ROOT/.speckit/context" \
-        "$REPO_ROOT/.speckit/health" \
-        "$REPO_ROOT/.speckit/agent/chunks" \
-        "$REPO_ROOT/.speckit/agent/instructions" \
-        "$REPO_ROOT/.speckit/patches" \
-        "$REPO_ROOT/ai/datasets" \
-        "$REPO_ROOT/docs/diagrams" \
-        "$REPO_ROOT/docs/release-notes"; do
-        if [[ ! -d "$dir" ]]; then
-            echo "ERROR: Missing required directory for advanced /speckit.* commands: $dir" >&2
-            missing_advanced=1
-        fi
-    done
-
-    if [[ ! -f "$REPO_ROOT/VERSION" ]]; then
-        echo "ERROR: VERSION file not found in $REPO_ROOT" >&2
-        missing_advanced=1
-    fi
-
-    if [[ $missing_advanced -ne 0 ]]; then
-        exit 1
-    fi
 fi
 
 # Build list of available documents

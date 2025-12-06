@@ -31,6 +31,22 @@ class ValidationResult:
     def has_blocking_errors(self) -> bool:
         return any(issue.severity in (Severity.ERROR, Severity.CRITICAL) for issue in self.issues)
 
+    @property
+    def warning_count(self) -> int:
+        return sum(1 for issue in self.issues if issue.severity == Severity.WARNING)
+
+    @property
+    def error_count(self) -> int:
+        return sum(1 for issue in self.issues if issue.severity in (Severity.ERROR, Severity.CRITICAL))
+
+    @property
+    def circular_dependency_count(self) -> int:
+        return sum(
+            1
+            for issue in self.issues
+            if "circular" in (issue.message or "").lower()
+        )
+
 
 class ValidationRule(Protocol):
     """Protocol describing validation rules."""

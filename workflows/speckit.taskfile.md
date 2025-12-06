@@ -39,7 +39,7 @@ Generates a dedicated markdown file for a specific task containing all necessary
    - Include YAML frontmatter with metadata:
      - Task ID and order
      - Parallel execution flag
-     - Dependencies
+     - Dependencies (`dependencies: [ "CTX-task-id", ... ]`) - Must match `metadata.code` of predecessor tasks.
 
 5. **Output Results**
    - Display the path to the generated task file

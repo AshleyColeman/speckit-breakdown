@@ -32,7 +32,8 @@ Expands high-level tasks into multiple parallel sub-tasks to accelerate implemen
    - Generate unique task IDs (find current max ID + 1)
    - Mark all generated tasks with `[P]` for parallel execution
    - Maintain same phase as parent task
-   - Copy dependencies from parent task
+   - **Crucial**: Copy exact `dependencies` list from parent task into the Frontmatter of all new tasks.
+     - This ensures `speckit.db.prepare` calculates them as correct siblings in the Step Order.
 
 5. **Update Task List**
    - Call `.specify/scripts/bash/expand-tasks.sh` with generated tasks
