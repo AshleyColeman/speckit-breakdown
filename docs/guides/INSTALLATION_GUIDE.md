@@ -239,7 +239,7 @@ SpecKit Breakdown fits perfectly into the SpecKit workflow:
 ## 📖 Documentation
 
 - **README**: https://github.com/AshleyColeman/speckit-breakdown/blob/main/README.md
-- **Quick Start**: https://github.com/AshleyColeman/speckit-breakdown/blob/main/QUICK_START.md
+- **Quick Start**: https://github.com/AshleyColeman/speckit-breakdown/blob/main/docs/guides/QUICK_START.md
 - **Examples**: https://github.com/AshleyColeman/speckit-breakdown/tree/main/examples
 
 ---

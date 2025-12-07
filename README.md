@@ -50,6 +50,16 @@ mkdir -p /path/to/your/project/docs/features
 # 3. Done! Now you can use /speckit.breakdown
 ```
 
+## Documentation
+
+- **[System Guide (Gold Standard)](docs/speckit_system_guide.md)**: The technical reference and "Golden Workflow" for the entire system.
+- **[Exist Project Guide (Dummies Guide)](docs/guides/EXISTING_PROJECT_GUIDE.md)**: **<-- START HERE for brownfield projects.**
+- **[Quick Start](docs/guides/QUICK_START.md)**: 5-minute guide.
+- **[Installation Guide](docs/guides/INSTALLATION_GUIDE.md)**: Detailed installation steps.
+- **[How to Use](docs/guides/HOW_TO_USE.md)**: Usage guide and examples.
+- **[Get Started](docs/guides/GET_STARTED.md)**: Local development guide.
+- **[Maintainer Guide](docs/maintainers/SETUP_AS_REPO.md)**: Publishing and maintenance.
+
 ## Usage
 
 ### Step 1: Create Your Project Spec

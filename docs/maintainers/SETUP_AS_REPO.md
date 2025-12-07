@@ -149,11 +149,12 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/mai
 ```
 speckit-breakdown/
 ├── README.md                      # Main documentation
-├── QUICK_START.md                 # 5-minute guide
-├── SETUP_AS_REPO.md              # This file
+├── docs/guides/QUICK_START.md     # 5-minute guide
+├── docs/maintainers/SETUP_AS_REPO.md   # This file
 ├── VERSION                        # Version tracking
 ├── LICENSE                        # MIT recommended
 ├── install.sh                     # One-command installer
+├── scripts/install/install-local.sh  # Local installer
 ├── workflows/
 │   └── speckit.breakdown.md      # The workflow file
 ├── templates/

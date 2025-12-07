@@ -13,7 +13,7 @@
 ```bash
 # Install in your current project
 cd /home/ashleycoleman/Projects/product_scraper
-/tmp/speckit-breakdown/install-local.sh
+/tmp/speckit-breakdown/scripts/install/install-local.sh
 
 # ✅ Done! The /speckit.breakdown command is now available
 ```
@@ -48,13 +48,13 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/mai
 ### Core Tool Files
 - ✅ **workflows/speckit.breakdown.md** - The main workflow that does the magic
 - ✅ **install.sh** - One-command remote installer (for GitHub)
-- ✅ **install-local.sh** - Local installer (for testing)
+- ✅ **scripts/install/install-local.sh** - Local installer (for testing)
 
 ### Documentation  
 - ✅ **README.md** - Complete documentation
-- ✅ **QUICK_START.md** - 5-minute guide for users
-- ✅ **HOW_TO_USE.md** - This guide
-- ✅ **SETUP_AS_REPO.md** - How to publish to GitHub
+- ✅ **docs/guides/QUICK_START.md** - 5-minute guide for users
+- ✅ **docs/guides/HOW_TO_USE.md** - This guide
+- ✅ **docs/maintainers/SETUP_AS_REPO.md** - How to publish to GitHub
 
 ### Templates & Examples
 - ✅ **templates/project-spec.template.md** - Template for users
@@ -84,7 +84,7 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/mai
 curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/install.sh | bash
 
 # Or locally for testing:
-/path/to/speckit-breakdown/install-local.sh
+/path/to/speckit-breakdown/scripts/install/install-local.sh
 ```
 
 ### Step 3: Create Project Spec
@@ -173,7 +173,7 @@ Your tool took this:
 ```bash
 # 1. Install in your current project
 cd /home/ashleycoleman/Projects/product_scraper
-/tmp/speckit-breakdown/install-local.sh
+/tmp/speckit-breakdown/scripts/install/install-local.sh
 
 # 2. It's already done the breakdown, but you could re-run:
 /speckit.breakdown docs/NEXTJS_ADMIN_SPEC.md
@@ -204,7 +204,7 @@ curl -fsSL https://your-company.github.com/speckit-breakdown/install.sh | bash
 ### For the World (Open Source):
 ```bash
 # 1. Create public GitHub repo
-# 2. Follow SETUP_AS_REPO.md
+# 2. Follow docs/maintainers/SETUP_AS_REPO.md
 # 3. Share on Twitter, Reddit, Discord
 # 4. Help developers worldwide!
 ```
@@ -216,13 +216,13 @@ curl -fsSL https://your-company.github.com/speckit-breakdown/install.sh | bash
 ```
 /tmp/speckit-breakdown/
 ├── 📄 README.md              ← Main docs (comprehensive)
-├── 📄 QUICK_START.md         ← 5-min guide for users
-├── 📄 HOW_TO_USE.md          ← How to use/publish
-├── 📄 SETUP_AS_REPO.md       ← GitHub setup steps
-├── 📄 GET_STARTED.md         ← This file!
-│
-├── 🔧 install.sh             ← Remote installer
-├── 🔧 install-local.sh       ← Local installer
+    ├── 📄 docs/guides/QUICK_START.md         ← 5-min guide for users
+    ├── 📄 docs/guides/HOW_TO_USE.md          ← How to use/publish
+    ├── 📄 docs/maintainers/SETUP_AS_REPO.md       ← GitHub setup steps
+    ├── 📄 docs/guides/GET_STARTED.md         ← This file!
+    │
+    ├── 🔧 install.sh             ← Remote installer
+    ├── 🔧 scripts/install/install-local.sh       ← Local installer
 ├── 📄 LICENSE                ← MIT
 ├── 📄 VERSION                ← 1.0.0
 │
@@ -250,7 +250,7 @@ curl -fsSL https://your-company.github.com/speckit-breakdown/install.sh | bash
 ```bash
 # Test locally
 cd /home/ashleycoleman/Projects/product_scraper
-/tmp/speckit-breakdown/install-local.sh
+/tmp/speckit-breakdown/scripts/install/install-local.sh
 
 # Publish to GitHub
 cd /tmp/speckit-breakdown
@@ -272,18 +272,18 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/mai
 Choose your path:
 
 **Path A: Test First** (Recommended)
-1. Run: `/tmp/speckit-breakdown/install-local.sh`
+1. Run: `/tmp/speckit-breakdown/scripts/install/install-local.sh`
 2. Try it on a project
 3. When happy, publish to GitHub
 
 **Path B: Publish Now**
-1. Read: `/tmp/speckit-breakdown/SETUP_AS_REPO.md`
+1. Read: `/tmp/speckit-breakdown/docs/maintainers/SETUP_AS_REPO.md`
 2. Create GitHub repo
 3. Push and share!
 
 **Path C: Keep Private**
 1. Copy to permanent location: `cp -r /tmp/speckit-breakdown ~/`
-2. Use `~/speckit-breakdown/install-local.sh` in any project
+2. Use `~/speckit-breakdown/scripts/install/install-local.sh` in any project
 3. Share with team via private repo
 
 ---
@@ -291,8 +291,8 @@ Choose your path:
 ## 🆘 Need Help?
 
 - **How to use?** → Read `README.md`
-- **Quick test?** → Read `QUICK_START.md`
-- **Publish to GitHub?** → Read `SETUP_AS_REPO.md`
+- **Quick test?** → Read `docs/guides/QUICK_START.md`
+- **Publish to GitHub?** → Read `docs/maintainers/SETUP_AS_REPO.md`
 - **See example?** → Check `examples/nextjs-admin-panel/`
 
 ---
@@ -300,7 +300,7 @@ Choose your path:
 **Ready to transform project planning? Start with:**
 
 ```bash
-/tmp/speckit-breakdown/install-local.sh
+/tmp/speckit-breakdown/scripts/install/install-local.sh
 ```
 
 🚀 Happy building!

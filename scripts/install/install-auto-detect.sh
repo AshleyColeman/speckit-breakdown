@@ -97,9 +97,9 @@ WORKFLOW_FILE=".windsurf/workflows/speckit.breakdown.md"
 
 echo -e "${BLUE}📝 Downloading speckit.breakdown workflow...${NC}"
 
-if [ -f "$(dirname "$0")/workflows/speckit.breakdown.md" ]; then
+if [ -f "$(dirname "$0")/../../workflows/speckit.breakdown.md" ]; then
     # Local installation
-    cp "$(dirname "$0")/workflows/speckit.breakdown.md" "$WORKFLOW_FILE"
+    cp "$(dirname "$0")/../../workflows/speckit.breakdown.md" "$WORKFLOW_FILE"
 else
     # Remote installation
     curl -fsSL "https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/workflows/speckit.breakdown.md" -o "$WORKFLOW_FILE"

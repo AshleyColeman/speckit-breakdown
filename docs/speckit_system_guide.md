@@ -62,29 +62,61 @@ These commands are defined as AI agent workflows (in `.claude/commands` or `work
 | `/speckit.techstack` | ✅ Created | Documents the chosen tech stack. |
 | `/speckit.testgen` | ✅ Created | Generates test cases from specs. |
 
-### ❌ Missing / Not Yet Created
+### 🛡️ Integrated Core Services
 
-The following commands might be planned or implied but are not explicitly found in the latest command set:
+The following capabilities are fully active and integrated into the core pipeline (powering `/speckit.db.prepare`):
 
-- **Rollback Manager CLI**: While `db.prepare` handles some transactional logic, a dedicated `/speckit.db.rollback` command is not yet exposed.
-- **Advanced Reporting**: A command like `/speckit.report` to generate PDF/HTML summaries of the DB state is not yet created.
+- **Rollback Manager**: Transactional safety is built-in. If an error occurs during `db.prepare` persistence, all changes are automatically rolled back to ensure database consistency.
+- **Validation Reporting**: A robust reporting engine flags circular dependencies, duplicates, and schema violations with actionable CLI error messages before data is committed.
+
+---
+
+## 🤖 Part 3: Advanced AI Workflows (The "Context" Layer)
+
+These commands (introduced in Spec 006) enable **Agentic Development** by treating the project context as a portable data asset.
+
+### `/speckit.arch`
+**Goal**: Technical Architecture Snapshot.
+*   **Action**: Synthesizes `spec.md`, `plan.md`, and `tasks.md` into a single high-level `architecture.md`.
+*   **Use Code**: Runs `build-architecture.sh`.
+*   **When to use**: After `/speckit.plan`, before `/speckit.implement`.
+
+### `/speckit.checklist`
+**Goal**: "Unit Tests for Requirements".
+*   **Action**: Generates a quality checklist (e.g. `checklists/ux.md`) to verify your requirements are clear, complete, and testable.
+*   **Use Code**: Runs `check-prerequisites.sh`.
+*   **When to use**: After `/speckit.specify`, before `/speckit.plan`.
+
+### `/speckit.bundle`
+**Goal**: Context Packing for Agents.
+*   **Action**: Gathers all design artifacts (spec, plan, tasks, research, arch) into a standardized JSON "Context Pack" (`.speckit/context/`).
+*   **Use Code**: Runs `build-context-pack.sh`.
+*   **When to use**: Before handing off complex tasks to an autonomous agent; automatically creates the "Brain" for the agent.
+
+### `/speckit.health`
+**Goal**: Project Health Monitor.
+*   **Action**: Runs a physical consistency check (missing docs, outdated plans) and reports status.
+*   **Use Code**: Runs `health-check.sh`.
+*   **When to use**: Periodically during `implement` phase or before a release.
 
 ---
 
 ## 📚 Recommended Usage Order
 
 1.  **Planning Phase**:
-    *   `breakdown` -> `specify` -> `clarify` -> `specreview`
-    *   `techadvisor` -> `techstack` -> `arch`
-    *   `plan` -> `planreview` -> `tasks` -> `taskreview`
+    *   `breakdown` -> `specify` -> `clarify` -> **`checklist`** (Quality Gate)
+    *   `specreview` -> `techadvisor` -> `plan` -> `planreview`
+    *   **`arch`** (System Design) -> `tasks` -> `taskreview`
 
 2.  **Bootstrap Phase**:
     *   `db.prepare` (Populate System DB)
+    *   **`bundle`** (Export Context for Agents)
 
 3.  **Execution Phase**:
     *   `implement` (Iterative coding)
     *   `testgen` (Create tests)
-    *   `health` / `checklist` (Quality Assurance)
+    *   **`health`** (Quality Assurance)
+    *   `sync` (Docs <-> Code reconciliation)
 
 ---
 
@@ -108,17 +140,17 @@ Follow these steps in order to build a feature or project.
 *   **Action**: Generates a detailed "Product Requirement Document" (PRD) for that feature.
 *   **Output**: A detailed markdown file in `specs/`.
 
-#### 3. Refine the Spec (`/speckit.clarify`)
-**Goal**: Remove ambiguity.
+#### 3. Refine & Verify (`/speckit.clarify` & `/speckit.checklist`)
+**Goal**: Remove ambiguity and ensure quality.
 *   **Input**: The specification from step 2.
-*   **Action**: The AI asks you questions to clarify edge cases and business rules.
-*   **Output**: An updated, much sharper specification.
+*   **Action**: The AI asks clarifying questions, then generates a "Unit Test" checklist for your requirements.
+*   **Output**: A sharper spec and a `checklists/domain.md` validation file.
 
-#### 4. Create a Tech Plan (`/speckit.plan`)
-**Goal**: Decide *how* to build it.
+#### 4. Create Tech & Arch Plans (`/speckit.plan` & `/speckit.arch`)
+**Goal**: Decide *how* to build it and document the system design.
 *   **Input**: The clarified specification.
-*   **Action**: Designs the database schema, API endpoints, and component architecture.
-*   **Output**: An Implementation Plan (usually `implementation_plan.md`).
+*   **Action**: Designs the component architecture (`arch`) and detailed implementation steps (`plan`).
+*   **Output**: `architecture.md` and `implementation_plan.md`.
 
 #### 5. Break into Tasks (`/speckit.tasks`)
 **Goal**: Create a checklist.
@@ -126,14 +158,14 @@ Follow these steps in order to build a feature or project.
 *   **Action**: Generates a detailed checklist of tiny, actionable coding tasks (e.g., "Create user table", "Add login route").
 *   **Output**: A `tasks.md` file.
 
-#### 6. Load into Database (`/speckit.db.prepare`)
+#### 6. System Sync (`/speckit.db.prepare` & `/speckit.bundle`)
 **Goal**: **Sync your docs to the system brain.**
 *   **Input**: The markdown files created in previous steps.
-*   **Action**: Parses all projects, features, specs, and tasks and saves them into a structured SQLite database. This allows the system to understand relationships and dependencies programmatically.
-*   **Output**: `db.sqlite` populated with your project data.
+*   **Action**: Persists data to the local DB and creates a "Context Pack" for autonomous agents.
+*   **Output**: `db.sqlite` populated and `.speckit/context/` generated.
 
-#### 7. Write Code (`/speckit.implement`)
-**Goal**: Build it!
-*   **Input**: The `tasks.md` file and the database context.
-*   **Action**: An AI agent picks up tasks one by one and writes the code.
-*   **Output**: Actual source code in your project.
+#### 7. Write & Monitor (`/speckit.implement` & `/speckit.health`)
+**Goal**: Build it and keep it healthy.
+*   **Input**: The `tasks.md` file and database context.
+*   **Action**: An AI agent writes the code. You run health checks to identify missing docs or drift.
+*   **Output**: Actual source code and health reports.

@@ -82,10 +82,10 @@ mkdir -p docs/features
 # Download or copy the workflow file
 WORKFLOW_FILE=".windsurf/workflows/speckit.breakdown.md"
 
-if [ -f "$(dirname "$0")/workflows/speckit.breakdown.md" ]; then
+if [ -f "$(dirname "$0")/../../workflows/speckit.breakdown.md" ]; then
     # Local installation
     echo "📝 Installing speckit.breakdown workflow (local)..."
-    cp "$(dirname "$0")/workflows/speckit.breakdown.md" "$WORKFLOW_FILE"
+    cp "$(dirname "$0")/../../workflows/speckit.breakdown.md" "$WORKFLOW_FILE"
 else
     # Remote installation
     echo "📝 Downloading speckit.breakdown workflow..."

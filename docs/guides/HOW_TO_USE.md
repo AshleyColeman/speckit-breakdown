@@ -15,7 +15,7 @@ Location: `/tmp/speckit-breakdown/`
 cd /home/ashleycoleman/Projects/product_scraper
 
 # Install from local copy
-/tmp/speckit-breakdown/install-local.sh
+/tmp/speckit-breakdown/scripts/install/install-local.sh
 
 # Now you can use it!
 /speckit.breakdown docs/NEXTJS_ADMIN_SPEC.md
@@ -52,13 +52,13 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/mai
 ```
 /tmp/speckit-breakdown/
 ├── README.md                          # Complete documentation
-├── QUICK_START.md                     # 5-minute guide
-├── SETUP_AS_REPO.md                   # GitHub setup instructions
-├── LICENSE                            # MIT license
-├── VERSION                            # Version tracking (1.0.0)
-│
-├── install.sh                         # Remote installer (for GitHub)
-├── install-local.sh                   # Local installer (for testing)
+    ├── docs/guides/QUICK_START.md                     # 5-minute guide
+    ├── docs/maintainers/SETUP_AS_REPO.md                   # GitHub setup instructions
+    ├── LICENSE                            # MIT license
+    ├── VERSION                            # Version tracking (1.0.0)
+    │
+    ├── install.sh                         # Remote installer (for GitHub)
+    ├── scripts/install/install-local.sh                   # Local installer (for testing)
 │
 ├── workflows/
 │   └── speckit.breakdown.md          # The main workflow
@@ -82,7 +82,7 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/mai
 ```bash
 # 1. Install locally
 cd /home/ashleycoleman/Projects/product_scraper
-/tmp/speckit-breakdown/install-local.sh
+/tmp/speckit-breakdown/scripts/install/install-local.sh
 
 # 2. Try it! (it's already there, but this would work)
 /speckit.breakdown docs/NEXTJS_ADMIN_SPEC.md
@@ -203,7 +203,7 @@ Next: Run /speckit.specify for F01!
 cp -r /tmp/speckit-breakdown ~/speckit-breakdown
 
 # Install in any project
-~/speckit-breakdown/install-local.sh
+~/speckit-breakdown/scripts/install/install-local.sh
 ```
 
 ### Option B: Share with Team
@@ -217,7 +217,7 @@ curl -fsSL https://your-company-git.com/speckit-breakdown/install.sh | bash
 ### Option C: Open Source It! (Recommended)
 
 ```bash
-# Follow SETUP_AS_REPO.md instructions
+# Follow docs/maintainers/SETUP_AS_REPO.md instructions
 # Publish to GitHub
 # Share with community!
 ```
@@ -260,12 +260,12 @@ You now have:
 
 ```bash
 cd /home/ashleycoleman/Projects/product_scraper
-/tmp/speckit-breakdown/install-local.sh
+/tmp/speckit-breakdown/scripts/install/install-local.sh
 ```
 
 **Want to publish it?**
 
-Read: `/tmp/speckit-breakdown/SETUP_AS_REPO.md`
+Read: `/tmp/speckit-breakdown/docs/maintainers/SETUP_AS_REPO.md`
 
 **Questions?**
 
