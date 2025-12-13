@@ -41,6 +41,11 @@ def register(app: typer.Typer) -> None:
             "--db-url",
             help="PostgreSQL connection string (overrides --storage-path).",
         ),
+        enable_experimental_postgres: bool = typer.Option(
+            False,
+            "--enable-experimental-postgres",
+            help="Enable experimental PostgreSQL backend (disabled by default).",
+        ),
         log_format: LogFormat = typer.Option(
             "human",
             "--log-format",
@@ -95,10 +100,15 @@ def register(app: typer.Typer) -> None:
             skip_task_runs=skip_task_runs,
             skip_ai_jobs=skip_ai_jobs,
         )
-        _run_bootstrap(config, options, db_url)
+        _run_bootstrap(config, options, db_url, enable_experimental_postgres)
 
 
-def _run_bootstrap(config: BootstrapConfig, options: BootstrapOptions, db_url: Optional[str] = None) -> None:
+def _run_bootstrap(
+    config: BootstrapConfig,
+    options: BootstrapOptions,
+    db_url: Optional[str] = None,
+    enable_experimental_postgres: bool = False,
+) -> None:
     """
     Execute the bootstrap pipeline using the configured orchestrator.
     """
@@ -110,7 +120,15 @@ def _run_bootstrap(config: BootstrapConfig, options: BootstrapOptions, db_url: O
     else:
         logger.info("Storage target", extra={"storage": str(config.storage_path)})
 
-    gateway = DataStoreGateway(gateway_target)
+    if isinstance(db_url, str) and db_url.startswith("postgresql://") and not enable_experimental_postgres:
+        typer.echo(
+            "PostgreSQL support is experimental and disabled by default. "
+            "Re-run with --enable-experimental-postgres. "
+            "See docs/cli/db_prepare.md."
+        )
+        raise typer.Exit(code=1)
+
+    gateway = DataStoreGateway(gateway_target, enable_experimental_postgres=enable_experimental_postgres)
     orchestrator = BootstrapOrchestrator(config.docs_root, gateway)
 
     summary = orchestrator.run_bootstrap(options)

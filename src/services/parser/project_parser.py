@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Optional
 
 from src.models.entities import ProjectDTO
+from src.services.parser.parser_utils import parse_yaml_frontmatter
 
 logger = logging.getLogger(__name__)
 
@@ -107,12 +108,8 @@ class ProjectParser:
         if match:
             frontmatter_text = match.group(1)
             try:
-                import yaml
-                return yaml.safe_load(frontmatter_text) or {}
-            except ImportError:
-                logger.warning("PyYAML not available, parsing frontmatter manually")
-                return self._parse_simple_frontmatter(frontmatter_text)
-            except Exception as e:
+                return parse_yaml_frontmatter(frontmatter_text)
+            except ValueError as e:
                 logger.warning(f"Failed to parse YAML frontmatter: {e}")
                 return self._parse_simple_frontmatter(frontmatter_text)
         return {}

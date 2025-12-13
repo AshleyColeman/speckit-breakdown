@@ -38,6 +38,23 @@ chmod +x /tmp/sb-install.sh
 rm /tmp/sb-install.sh
 ```
 
+### Installer supply-chain guidance
+
+- **Review before running**: Prefer downloading `install.sh` to a file, reviewing it, then executing it.
+- **Pin what you run**: For reproducible installs, pin downloads to a release tag or commit SHA.
+- **Verify integrity (optional)**: If you publish checksums/signatures for releases, verify them before executing.
+
+Pinned install example (replace `vX.Y.Z` with a tag or commit SHA):
+
+```bash
+REF=vX.Y.Z
+curl -fsSL "https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/${REF}/install.sh" -o /tmp/sb-install.sh
+less /tmp/sb-install.sh
+chmod +x /tmp/sb-install.sh
+SPECKIT_BREAKDOWN_REF="${REF}" /tmp/sb-install.sh
+rm /tmp/sb-install.sh
+```
+
 **One-liner:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh -o /tmp/sb-install.sh && chmod +x /tmp/sb-install.sh && /tmp/sb-install.sh && rm /tmp/sb-install.sh

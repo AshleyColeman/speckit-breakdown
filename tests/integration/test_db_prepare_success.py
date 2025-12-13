@@ -11,6 +11,7 @@ import json
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
+import contextlib
 
 import pytest
 
@@ -148,6 +149,12 @@ T002 depends on T001
         gateway.create_task_dependencies = create_task_dependencies
         gateway.create_task_runs = create_task_runs
         gateway.create_ai_jobs = create_ai_jobs
+
+        @contextlib.contextmanager
+        def transaction():
+            yield
+
+        gateway.transaction = transaction
         
         return gateway
 
@@ -313,16 +320,18 @@ T002 depends on T001
     def test_error_handling_and_recovery(self, temp_project_dir, mock_gateway):
         """Test error handling and recovery mechanisms."""
         # Create a malformed file to test error handling
-        (temp_project_dir / "features" / "bad-feature.md").write_text("Invalid markdown content")
+        (temp_project_dir / "features" / "bad-feature.md").write_text("""---
+feature_code: [
+---
+
+# Bad Feature
+""")
         
         orchestrator = BootstrapOrchestrator(temp_project_dir, mock_gateway)
         
-        # Run bootstrap - should handle errors gracefully
+        # Run bootstrap - should fail fast on parse errors
         result = orchestrator.run_bootstrap(BootstrapOptions(dry_run=True))
-        
-        # Should still succeed despite one bad file
-        assert result.success is True
-        
-        # Should still process valid files
-        assert result.feature_count >= 1  # At least the valid feature
+
+        assert result.success is False
+        assert result.error_message
         

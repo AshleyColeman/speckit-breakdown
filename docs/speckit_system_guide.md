@@ -23,6 +23,20 @@ These commands are built as robust Python applications with strict validation an
 /speckit.db.prepare [OPTIONS]
 ```
 
+**Local Python invocation (outside Windsurf)**:
+```bash
+pip install -r requirements-dev.txt
+python -m src.cli.main speckit.db.prepare --dry-run
+```
+
+**Support tiers**:
+- SQLite: Stable (default).
+- PostgreSQL: Experimental and disabled by default. Requires `--db-url` and `--enable-experimental-postgres`.
+
+**Schema expectations**:
+- SQLite: Initializes required tables automatically.
+- PostgreSQL: Requires a pre-existing schema contract. In particular, `tasks.metadata` must be `json/jsonb` and support `metadata->>'code'` lookups.
+
 **Key Options**:
 - `--dry-run`: Preview changes without writing to DB.
 - `--force`: Overwrite existing entities if they have changed.
@@ -66,7 +80,7 @@ These commands are defined as AI agent workflows (in `.claude/commands` or `work
 
 The following capabilities are fully active and integrated into the core pipeline (powering `/speckit.db.prepare`):
 
-- **Rollback Manager**: Transactional safety is built-in. If an error occurs during `db.prepare` persistence, all changes are automatically rolled back to ensure database consistency.
+- **Database transactions**: `db.prepare` persistence runs inside a single database transaction via the configured gateway. If an error occurs, the gateway rolls back the transaction to keep the store consistent.
 - **Validation Reporting**: A robust reporting engine flags circular dependencies, duplicates, and schema violations with actionable CLI error messages before data is committed.
 
 ---

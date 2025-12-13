@@ -5,13 +5,198 @@ Validation rules for the bootstrap process.
 from __future__ import annotations
 
 import logging
-import re
-from typing import Iterable, Set, Dict, List
+from typing import Dict, Iterable, List, Sequence, Set
+
+from src.models.entities import FeatureDTO, ProjectDTO, SpecificationDTO, TaskDTO, TaskDependencyDTO
+from src.services.validation_pipeline import ValidationIssue, Severity
 
 logger = logging.getLogger(__name__)
 
-from src.models.entities import ProjectDTO, FeatureDTO, SpecificationDTO, TaskDTO, TaskDependencyDTO
-from src.services.validation_pipeline import ValidationRule, ValidationIssue, Severity
+
+class RequiredFieldsRule:
+    """Validates that required entity fields exist and are non-empty."""
+
+    name = "required_fields_rule"
+
+    def __init__(
+        self,
+        project: ProjectDTO,
+        features: Iterable[FeatureDTO],
+        specs: Iterable[SpecificationDTO],
+        tasks: Iterable[TaskDTO],
+    ) -> None:
+        self._project = project
+        self._features = list(features)
+        self._specs = list(specs)
+        self._tasks = list(tasks)
+
+    @staticmethod
+    def _is_blank(value: object) -> bool:
+        if value is None:
+            return True
+        if isinstance(value, str) and not value.strip():
+            return True
+        return False
+
+    def run(self) -> Iterable[ValidationIssue]:
+        if self._is_blank(self._project.code):
+            yield ValidationIssue(severity=Severity.CRITICAL, message="Project code is required", location="Project")
+        if self._is_blank(self._project.name):
+            yield ValidationIssue(severity=Severity.ERROR, message="Project name is required", location="Project")
+
+        for feature in self._features:
+            if self._is_blank(feature.code):
+                yield ValidationIssue(
+                    severity=Severity.CRITICAL,
+                    message="Feature code is required",
+                    location=f"Feature: {feature.name}",
+                )
+            if self._is_blank(feature.project_code):
+                yield ValidationIssue(
+                    severity=Severity.CRITICAL,
+                    message=f"Feature '{feature.code}' is missing project_code",
+                    location=f"Feature: {feature.code}",
+                )
+            if self._is_blank(feature.name):
+                yield ValidationIssue(
+                    severity=Severity.ERROR,
+                    message=f"Feature '{feature.code}' is missing name",
+                    location=f"Feature: {feature.code}",
+                )
+
+        for spec in self._specs:
+            if self._is_blank(spec.code):
+                yield ValidationIssue(
+                    severity=Severity.CRITICAL,
+                    message="Specification code is required",
+                    location=f"Spec: {spec.title}",
+                )
+            if self._is_blank(spec.feature_code):
+                yield ValidationIssue(
+                    severity=Severity.CRITICAL,
+                    message=f"Specification '{spec.code}' is missing feature_code",
+                    location=f"Spec: {spec.code}",
+                )
+            if self._is_blank(spec.title):
+                yield ValidationIssue(
+                    severity=Severity.ERROR,
+                    message=f"Specification '{spec.code}' is missing title",
+                    location=f"Spec: {spec.code}",
+                )
+            if self._is_blank(spec.path):
+                yield ValidationIssue(
+                    severity=Severity.ERROR,
+                    message=f"Specification '{spec.code}' is missing path",
+                    location=f"Spec: {spec.code}",
+                )
+
+        for task in self._tasks:
+            if self._is_blank(task.code):
+                yield ValidationIssue(severity=Severity.CRITICAL, message="Task code is required", location="Task")
+            if self._is_blank(task.feature_code):
+                yield ValidationIssue(
+                    severity=Severity.CRITICAL,
+                    message=f"Task '{task.code}' is missing feature_code",
+                    location=f"Task: {task.code}",
+                )
+            if self._is_blank(task.title):
+                yield ValidationIssue(
+                    severity=Severity.ERROR,
+                    message=f"Task '{task.code}' is missing title",
+                    location=f"Task: {task.code}",
+                )
+            if self._is_blank(task.status):
+                yield ValidationIssue(
+                    severity=Severity.ERROR,
+                    message=f"Task '{task.code}' is missing status",
+                    location=f"Task: {task.code}",
+                )
+            if self._is_blank(task.task_type):
+                yield ValidationIssue(
+                    severity=Severity.ERROR,
+                    message=f"Task '{task.code}' is missing task_type",
+                    location=f"Task: {task.code}",
+                )
+
+
+class ReferentialIntegrityRule:
+    """Validates references between entities (feature->project, spec->feature, task->feature)."""
+
+    name = "referential_integrity_rule"
+
+    def __init__(
+        self,
+        project: ProjectDTO,
+        features: Iterable[FeatureDTO],
+        specs: Iterable[SpecificationDTO],
+        tasks: Iterable[TaskDTO],
+    ) -> None:
+        self._project = project
+        self._features = list(features)
+        self._specs = list(specs)
+        self._tasks = list(tasks)
+
+    def run(self) -> Iterable[ValidationIssue]:
+        project_code = (self._project.code or "").strip()
+        project_name = (self._project.name or "").strip()
+
+        def _normalize(value: str) -> str:
+            return value.strip().lower()
+
+        feature_identifiers = {
+            _normalize(v)
+            for f in self._features
+            for v in (f.code, f.name)
+            if isinstance(v, str) and v.strip()
+        }
+
+        for feature in self._features:
+            feature_project = (feature.project_code or "").strip()
+            if feature_project and _normalize(feature_project) not in {
+                _normalize(project_code),
+                _normalize(project_name),
+            }:
+                yield ValidationIssue(
+                    severity=Severity.ERROR,
+                    message=(
+                        f"Feature '{feature.code}' references project '{feature.project_code}' "
+                        f"but active project is '{project_code}'."
+                    ),
+                    location=f"Feature: {feature.code}",
+                )
+
+        for spec in self._specs:
+            if _normalize(spec.feature_code or "") not in feature_identifiers:
+                yield ValidationIssue(
+                    severity=Severity.ERROR,
+                    message=f"Spec '{spec.code}' references missing feature '{spec.feature_code}'.",
+                    location=f"Spec: {spec.code}",
+                )
+
+        for task in self._tasks:
+            if _normalize(task.feature_code or "") not in feature_identifiers:
+                yield ValidationIssue(
+                    severity=Severity.ERROR,
+                    message=f"Task '{task.code}' references missing feature '{task.feature_code}'.",
+                    location=f"Task: {task.code}",
+                )
+
+
+class InvalidDependencyReferenceRule:
+    """Reports dependency edges referencing tasks that do not exist."""
+
+    name = "invalid_dependency_reference_rule"
+
+    def __init__(self, invalid_dependencies: Sequence[TaskDependencyDTO]) -> None:
+        self._invalid_dependencies = list(invalid_dependencies)
+
+    def run(self) -> Iterable[ValidationIssue]:
+        for dep in self._invalid_dependencies:
+            yield ValidationIssue(
+                severity=Severity.ERROR,
+                message=f"Dependency references unknown task(s): {dep.task_code} depends on {dep.depends_on}",
+                location=f"Dependency: {dep.task_code} -> {dep.depends_on}",
+            )
 
 
 class DuplicateEntityRule:
@@ -30,43 +215,51 @@ class DuplicateEntityRule:
         
         # Check projects
         for p in self.projects:
-            if p.code in seen_codes:
+            code = (p.code or "").strip().upper()
+            if code in seen_codes:
                 yield ValidationIssue(
                     severity=Severity.ERROR,
                     message=f"Duplicate Project Code found: {p.code}",
                     location=f"Project: {p.name}"
                 )
-            seen_codes.add(p.code)
+            if code:
+                seen_codes.add(code)
 
         # Check features
         for f in self.features:
-            if f.code in seen_codes:
+            code = (f.code or "").strip().upper()
+            if code in seen_codes:
                 yield ValidationIssue(
                     severity=Severity.ERROR,
                     message=f"Duplicate Feature Code found: {f.code}",
                     location=f"Feature: {f.name} (Project: {f.project_code})"
                 )
-            seen_codes.add(f.code)
+            if code:
+                seen_codes.add(code)
             
         # Check specs
         for s in self.specs:
-            if s.code in seen_codes:
-                 yield ValidationIssue(
+            code = (s.code or "").strip().upper()
+            if code in seen_codes:
+                yield ValidationIssue(
                     severity=Severity.ERROR,
                     message=f"Duplicate Spec Code found: {s.code}",
                     location=f"Spec: {s.title} (Feature: {s.feature_code})"
                 )
-            seen_codes.add(s.code)
+            if code:
+                seen_codes.add(code)
 
         # Check tasks
         for t in self.tasks:
-             if t.code in seen_codes:
-                 yield ValidationIssue(
+            code = (t.code or "").strip().upper()
+            if code in seen_codes:
+                yield ValidationIssue(
                     severity=Severity.ERROR,
                     message=f"Duplicate Task Code found: {t.code}",
-                    location=f"Task: {t.title} (Spec: {t.feature_code})" # Note: TaskDTO has feature_code? Let's check entities.py. No, looks like I should check TaskDTO attributes again.
+                    location=f"Task: {t.title} (Feature: {t.feature_code})"
                 )
-             seen_codes.add(t.code)
+            if code:
+                seen_codes.add(code)
 
 
 class CircularDependencyRule:

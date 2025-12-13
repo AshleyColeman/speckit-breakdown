@@ -20,14 +20,20 @@ class EntityMatcher:
     def __init__(self, reader: DataStoreReader):
         self._reader = reader
 
+    def _is_postgres_backend(self) -> bool:
+        return bool(getattr(self._reader, "_is_postgres", False))
+
     def find_existing_project(self, project: ProjectDTO) -> Optional[ProjectDTO]:
-        return self._reader.get_project(project.code)
+        identifier = project.name if self._is_postgres_backend() else project.code
+        return self._reader.get_project(identifier)
 
     def find_existing_feature(self, feature: FeatureDTO) -> Optional[FeatureDTO]:
-        return self._reader.get_feature(feature.code)
+        identifier = feature.name if self._is_postgres_backend() else feature.code
+        return self._reader.get_feature(identifier)
 
     def find_existing_spec(self, spec: SpecificationDTO) -> Optional[SpecificationDTO]:
-        return self._reader.get_spec(spec.code)
+        identifier = spec.title if self._is_postgres_backend() else spec.code
+        return self._reader.get_spec(identifier)
     
     def find_existing_task(self, task: TaskDTO) -> Optional[TaskDTO]:
         return self._reader.get_task(task.code)

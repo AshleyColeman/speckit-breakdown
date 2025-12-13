@@ -29,6 +29,7 @@ class DependencyParser:
         self._dependencies_dir = dependencies_dir
         self._dependency_pattern = re.compile(r'Depends on:\s*([^\n]+)', re.IGNORECASE)
         self._task_reference_pattern = re.compile(r'([A-Z]+-\d+|[a-zA-Z0-9-]+)', re.IGNORECASE)
+        self._heading_task_code_pattern = re.compile(r'\b([A-Z]+-\d+|T\d+)\b')
 
     def parse(self) -> list[TaskDependencyDTO]:
         """Parse dependency relationships from markdown files in dependencies/ directory."""
@@ -44,8 +45,7 @@ class DependencyParser:
                 file_deps = self._parse_dependency_file(dep_file)
                 dependencies.extend(file_deps)
             except Exception as e:
-                logger.error(f"Failed to parse dependency file {dep_file}: {e}")
-                continue
+                raise ValueError(f"Failed to parse dependency file {dep_file}: {e}") from e
         
         # Also look in numbered dependency directories
         for dep_dir in self._dependencies_dir.iterdir():
@@ -55,8 +55,7 @@ class DependencyParser:
                         file_deps = self._parse_dependency_file(dep_file)
                         dependencies.extend(file_deps)
                     except Exception as e:
-                        logger.error(f"Failed to parse dependency file {dep_file}: {e}")
-                        continue
+                        raise ValueError(f"Failed to parse dependency file {dep_file}: {e}") from e
         
         # Fallback to JSON if no markdown files found
         if not dependencies and (self._dependencies_dir / "dependencies.json").exists():
@@ -86,26 +85,31 @@ class DependencyParser:
     def _parse_dependency_file(self, dep_file: Path) -> List[TaskDependencyDTO]:
         """Parse a single dependency markdown file."""
         content = dep_file.read_text(encoding='utf-8')
-        dependencies = []
-        
-        # Find all dependency declarations
-        for match in self._dependency_pattern.finditer(content):
-            deps_text = match.group(1).strip()
-            
-            # Extract task codes from the dependency text
-            task_codes = self._extract_task_codes(deps_text)
-            
-            # Try to determine the context task code from filename or content
-            context_task_code = self._extract_context_task_code(dep_file, content)
-            
-            if context_task_code:
-                for dep_code in task_codes:
-                    dependencies.append(TaskDependencyDTO(task_code=context_task_code, depends_on=dep_code))
-            else:
-                # If no context task found, treat as standalone dependency declarations
-                # This would need additional context or be handled differently
+        dependencies: list[TaskDependencyDTO] = []
+
+        current_task_code: str = ""
+        for line in content.splitlines():
+            stripped = line.strip()
+
+            if stripped.startswith("#"):
+                heading_match = self._heading_task_code_pattern.search(stripped)
+                if heading_match:
+                    current_task_code = heading_match.group(1).upper()
+                continue
+
+            dep_match = self._dependency_pattern.search(stripped)
+            if not dep_match:
+                continue
+
+            if not current_task_code:
                 logger.warning(f"No context task code found in {dep_file}")
-        
+                continue
+
+            deps_text = dep_match.group(1).strip()
+            task_codes = self._extract_task_codes(deps_text)
+            for dep_code in task_codes:
+                dependencies.append(TaskDependencyDTO(task_code=current_task_code, depends_on=dep_code))
+
         return dependencies
 
     def _parse_json_dependencies(self) -> list[TaskDependencyDTO]:
@@ -153,11 +157,7 @@ class DependencyParser:
 
     def _looks_like_task_code(self, code: str) -> bool:
         """Basic validation if a string looks like a task code."""
-        # This is a simple heuristic - could be enhanced
-        return (
-            (len(code) >= 3 and code.replace('_', '').replace('-', '').isalnum()) or
-            (re.match(r'^[A-Z]+-\d+$', code))  # Format like "TASK-123"
-        )
+        return bool(re.match(r'^(T\d+|[A-Z]+-\d+)$', code))
 
     def _normalize_dependencies(self, dependencies: List[TaskDependencyDTO]) -> List[TaskDependencyDTO]:
         """Normalize and deduplicate dependency relationships."""

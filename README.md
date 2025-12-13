@@ -38,6 +38,23 @@ chmod +x install-speckit-breakdown.sh
 rm install-speckit-breakdown.sh
 ```
 
+### Installer supply-chain guidance
+
+- **Review before running**: Prefer downloading the installer to a file, reviewing it, then executing it.
+- **Pin what you run**: For long-lived setups, pin the installer/workflow downloads to a specific release tag or commit SHA.
+- **Verify integrity (optional)**: If you publish checksums/signatures for releases, verify them before executing.
+
+Pinned install example (replace `vX.Y.Z` with a tag or commit SHA):
+
+```bash
+REF=vX.Y.Z
+curl -fsSL "https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/${REF}/install.sh" -o /tmp/sb-install.sh
+less /tmp/sb-install.sh
+chmod +x /tmp/sb-install.sh
+SPECKIT_BREAKDOWN_REF="${REF}" /tmp/sb-install.sh
+rm /tmp/sb-install.sh
+```
+
 **One-liner (downloads, runs, and cleans up):**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh -o /tmp/sb-install.sh && chmod +x /tmp/sb-install.sh && /tmp/sb-install.sh && rm /tmp/sb-install.sh
@@ -64,6 +81,29 @@ mkdir -p /path/to/your/project/docs/features
 - **[How to Use](docs/guides/HOW_TO_USE.md)**: Usage guide and examples.
 - **[Get Started](docs/guides/GET_STARTED.md)**: Local development guide.
 - **[Maintainer Guide](docs/maintainers/SETUP_AS_REPO.md)**: Publishing and maintenance.
+
+## Support Matrix
+
+| Component | Support Tier | Notes |
+|---|---|---|
+| Markdown workflows (`/speckit.*`) | Stable | Runs as Windsurf/SpecKit workflows. |
+| Python CLI (`speckit.db.prepare`) | Stable | Run via `python -m src.cli.main speckit.db.prepare`. |
+| Data store: SQLite | Stable (default) | Auto-initializes schema on first run. |
+| Data store: PostgreSQL | Experimental (disabled by default) | Requires `--enable-experimental-postgres` and a pre-existing schema contract. |
+
+## Data store schema expectations
+
+- **SQLite**: The CLI creates/updates the `.speckit/db.sqlite` file and initializes required tables automatically.
+- **PostgreSQL**: The CLI will refuse to run unless the target database already matches the expected schema contract (including `tasks.metadata` being `json/jsonb` and supporting `metadata->>'code'` lookups for stable identifiers).
+
+## Python CLI (Developer)
+
+To run the Python CLI deterministically:
+
+```bash
+pip install -r requirements-dev.txt
+python -m src.cli.main speckit.db.prepare
+```
 
 ## Usage
 
@@ -263,6 +303,11 @@ The more detail you provide, the better the breakdown:
 
 ### "Estimates seem off"
 **Solution**: Complete one feature fully, then use that to calibrate remaining estimates.
+
+### Data store support tiers
+
+- **SQLite**: Stable (default).
+- **PostgreSQL**: Experimental and disabled by default. To use it with `speckit.db.prepare`, pass `--db-url` and `--enable-experimental-postgres`.
 
 ## Integration with SpecKit
 

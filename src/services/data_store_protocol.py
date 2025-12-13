@@ -1,0 +1,43 @@
+from __future__ import annotations
+
+from typing import Iterable, Protocol, Sequence
+
+from src.models.entities import (
+    AIJobDTO,
+    FeatureDTO,
+    ProjectDTO,
+    SpecificationDTO,
+    TaskDTO,
+    TaskDependencyDTO,
+    TaskRunDTO,
+)
+
+
+class DataStoreGatewayProtocol(Protocol):
+    _is_postgres: bool
+
+    def verify_schema(self) -> None: ...
+
+    def transaction(self): ...
+
+    def create_or_update_projects(self, projects: Sequence[ProjectDTO]) -> None: ...
+
+    def create_or_update_features(self, features: Sequence[FeatureDTO]) -> None: ...
+
+    def create_or_update_specs(self, specs: Sequence[SpecificationDTO]) -> None: ...
+
+    def create_or_update_tasks(self, tasks: Sequence[TaskDTO]) -> None: ...
+
+    def create_task_dependencies(self, dependencies: Iterable[TaskDependencyDTO]) -> None: ...
+
+    def create_task_runs(self, task_runs: Sequence[TaskRunDTO]) -> None: ...
+
+    def create_ai_jobs(self, ai_jobs: Sequence[AIJobDTO]) -> None: ...
+
+    def get_task(self, code: str) -> TaskDTO | None: ...
+
+    def get_project(self, code: str) -> ProjectDTO | None: ...
+
+    def get_feature(self, code: str) -> FeatureDTO | None: ...
+
+    def get_spec(self, code: str) -> SpecificationDTO | None: ...

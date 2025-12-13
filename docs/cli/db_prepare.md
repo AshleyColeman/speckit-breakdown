@@ -2,6 +2,8 @@
 
 The `speckit.db.prepare` command initializes the local system data store by parsing, validating, and persisting your Speckit specification files.
 
+YAML frontmatter parsing is performed via `PyYAML` (required) to ensure deterministic behavior across environments.
+
 ## Usage
 
 ```bash
@@ -14,10 +16,26 @@ The `speckit.db.prepare` command initializes the local system data store by pars
 |--------|-----------|-------------|---------|
 | `--docs-path` | | Path to documentation root (projects, specs, etc.) | `specs/` |
 | `--storage-path` | | Path to SQLite database | `.speckit/db.sqlite` |
+| `--db-url` | | PostgreSQL connection string (overrides `--storage-path`) | | 
+| `--enable-experimental-postgres` | | Allow use of PostgreSQL backend (experimental; disabled by default) | `False` |
 | `--dry-run` | | Validate and summarize changes without writing to DB | `False` |
 | `--force` | | Overwrite existing entities even if they conflict | `False` |
 | `--verbose`, `-v` | | Enable debug logging | `False` |
 | `--log-format` | | Output format (`human` or `json`) | `human` |
+
+## Support tiers
+
+- **SQLite**: Stable (default).
+- **PostgreSQL**: Experimental and **disabled by default**.
+
+## PostgreSQL schema contract (experimental)
+
+When using `--db-url postgresql://...` together with `--enable-experimental-postgres`, the CLI will **refuse to run** unless the target database already matches the expected schema contract.
+
+Key requirements:
+
+- The expected tables/columns must exist (e.g. `projects`, `features`, `specs`, `tasks`, `task_dependencies`).
+- `tasks.metadata` must be `json`/`jsonb` and must support `metadata->>'code'` lookups (stable identifiers are stored in `metadata['code']`).
 
 ### Selective Bootstrap Options
 

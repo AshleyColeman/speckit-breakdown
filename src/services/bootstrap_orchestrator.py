@@ -4,6 +4,7 @@ Bootstrap orchestration pipeline for US1.
 
 from __future__ import annotations
 
+from collections import deque
 import logging
 from dataclasses import dataclass
 from pathlib import Path
@@ -11,7 +12,7 @@ from typing import Optional, Sequence
 
 from src.models.entities import TaskDTO, TaskDependencyDTO
 from src.services.bootstrap_options import BootstrapOptions
-from src.services.data_store_gateway import DataStoreGateway
+from src.services.data_store_protocol import DataStoreGatewayProtocol
 from src.services.doc_discovery import DocumentationDiscoveryService
 from src.services.parser.project_parser import ProjectParser
 from src.services.parser.feature_parser import FeatureParser, SpecificationParser, TaskParser
@@ -20,6 +21,9 @@ from src.services.task_run_service import TaskRunService
 from src.services.ai_job_service import AIJobService
 from src.services.upsert_service import UpsertService
 from src.services.validation.rules import (
+    RequiredFieldsRule,
+    ReferentialIntegrityRule,
+    InvalidDependencyReferenceRule,
     DuplicateEntityRule,
     CircularDependencyRule,
     MalformedDocRule,
@@ -57,7 +61,7 @@ class BootstrapSummary:
 class BootstrapOrchestrator:
     """Coordinates discovery, parsing, validation, and persistence for bootstrap runs."""
 
-    def __init__(self, project_path: Path, gateway: DataStoreGateway) -> None:
+    def __init__(self, project_path: Path, gateway: DataStoreGatewayProtocol) -> None:
         self._project_path = project_path
         self._gateway = gateway
         self._discovery_service = DocumentationDiscoveryService(project_path)
@@ -93,21 +97,33 @@ class BootstrapOrchestrator:
             dependencies = dep_parser.parse()
             task_dependencies = dep_parser.parse_from_tasks(tasks)
             all_dependencies = list(dependencies) + list(task_dependencies)
-            
-            # Filter dependencies to only include those relevant to filtered tasks
+
+            valid_task_codes = {t.code.upper() for t in tasks}
+
+            # When scoping by project, drop dependency edges from tasks outside the scoped set,
+            # but still validate edges where a scoped task references an unknown dependency.
             if options.project:
-                valid_task_codes = {t.code for t in tasks}
-                all_dependencies = [
-                    d for d in all_dependencies 
-                    if d.task_code in valid_task_codes
-                ]
+                all_dependencies = [d for d in all_dependencies if d.task_code.upper() in valid_task_codes]
+
+            invalid_dependencies = [
+                d
+                for d in all_dependencies
+                if d.task_code.upper() not in valid_task_codes or d.depends_on.upper() not in valid_task_codes
+            ]
+
+            all_dependencies = [
+                d
+                for d in all_dependencies
+                if d.task_code.upper() in valid_task_codes and d.depends_on.upper() in valid_task_codes
+            ]
 
             validation_result = self._run_validation(
                 project=project,
                 features=features,
                 specs=specs,
                 tasks=tasks,
-                dependencies=all_dependencies
+                dependencies=all_dependencies,
+                invalid_dependencies=invalid_dependencies,
             )
 
             # Calculate step orders based on dependencies
@@ -128,19 +144,22 @@ class BootstrapOrchestrator:
                     validation_result=validation_result,
                 )
 
-            self._persist_entities(project, features, specs, tasks, all_dependencies, options)
-            
             task_runs = []
-            if not options.skip_task_runs:
-                task_runs = self._task_run_service.create_task_runs(tasks, options)
-                if task_runs:
-                    self._gateway.create_task_runs(task_runs)
-
             ai_jobs = []
-            if not options.skip_ai_jobs:
-                ai_jobs = self._ai_job_service.create_ai_jobs(tasks, options)
-                if ai_jobs:
-                    self._gateway.create_ai_jobs(ai_jobs)
+
+            with self._gateway.transaction():
+                self._gateway.verify_schema()
+                self._persist_entities(project, features, specs, tasks, all_dependencies, options)
+
+                if not options.skip_task_runs:
+                    task_runs = self._task_run_service.create_task_runs(tasks, options)
+                    if task_runs:
+                        self._gateway.create_task_runs(task_runs)
+
+                if not options.skip_ai_jobs:
+                    ai_jobs = self._ai_job_service.create_ai_jobs(tasks, options)
+                    if ai_jobs:
+                        self._gateway.create_ai_jobs(ai_jobs)
 
             return BootstrapSummary(
                 project_count=1,
@@ -160,7 +179,7 @@ class BootstrapOrchestrator:
             logger.error("Validation failed", exc_info=True)
             return BootstrapSummary(
                 success=False,
-                error_message="Validation passed with errors.",
+                error_message="Validation failed.",
                 warning_count=exc.result.warning_count,
                 error_count=exc.result.error_count,
                 circular_dependency_count=exc.result.circular_dependency_count,
@@ -194,9 +213,13 @@ class BootstrapOrchestrator:
         specs,
         tasks,
         dependencies,
+        invalid_dependencies,
     ):
         pipeline = ValidationPipeline(
             rules=[
+                RequiredFieldsRule(project, features, specs, tasks),
+                ReferentialIntegrityRule(project, features, specs, tasks),
+                InvalidDependencyReferenceRule(invalid_dependencies),
                 DuplicateEntityRule([project], features, specs, tasks),
                 CircularDependencyRule(tasks, dependencies),
                 MalformedDocRule(tasks),
@@ -238,14 +261,10 @@ class BootstrapOrchestrator:
         # Since it's a DAG (validated by CircularDependencyRule), we can iterate.
         
         # Initialize queue with all source nodes
-        queue = [code for code in task_map if in_degree[code] == 0]
-        
-        processed_count = 0
-        total_tasks = len(task_map)
+        queue = deque([code for code in task_map if in_degree[code] == 0])
         
         while queue:
-            u = queue.pop(0)
-            processed_count += 1
+            u = queue.popleft()
             
             current_step = step_orders[u]
             

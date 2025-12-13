@@ -29,6 +29,20 @@ Run this **one-liner** to verify your environment and install the necessary work
 curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
 ```
 
+If you prefer a more secure/reproducible approach:
+
+- Download the installer to a file and review it before running.
+- Pin to a release tag or commit SHA.
+
+```bash
+REF=vX.Y.Z
+curl -fsSL "https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/${REF}/install.sh" -o /tmp/sb-install.sh
+less /tmp/sb-install.sh
+chmod +x /tmp/sb-install.sh
+SPECKIT_BREAKDOWN_REF="${REF}" /tmp/sb-install.sh
+rm /tmp/sb-install.sh
+```
+
 **What just happened?**
 - Created `.windsurf/workflows/` (if missing).
 - Downloaded `speckit.breakdown.md` and other core workflows.

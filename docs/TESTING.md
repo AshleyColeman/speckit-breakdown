@@ -6,7 +6,7 @@ This guide explains how to run the automated tests for the SpecKit system.
 
 ### 1. Prerequisites
 - **Python 3.10+** installed.
-- **Dependencies** installed (`pip install -r requirements.txt`).
+- **Dependencies** installed (`pip install -r requirements-dev.txt`).
 - **Bats Core** installed (`npm install -g bats`, or via your package manager) for Shell script testing.
 - **PostgreSQL** running (for integration tests).
 

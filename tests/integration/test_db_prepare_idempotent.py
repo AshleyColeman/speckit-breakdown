@@ -17,16 +17,17 @@ def test_idempotent_execution(tmp_path: Path):
     """
     project_dir = tmp_path / "project"
     create_full_project(project_dir)
+    db_path = tmp_path / "test_db.sqlite"
     
     # First run
-    result1 = runner.invoke(app, ["--docs-path", str(project_dir)])
+    result1 = runner.invoke(app, ["--docs-path", str(project_dir), "--storage-path", str(db_path)])
     assert result1.exit_code == 0
     
     # Capture output or verify DB state (if we had DB access here easily)
     # Ideally we mock the gateway or verify metrics if available.
     
     # Second run
-    result2 = runner.invoke(app, ["--docs-path", str(project_dir)])
+    result2 = runner.invoke(app, ["--docs-path", str(project_dir), "--storage-path", str(db_path)])
     assert result2.exit_code == 0
     assert "Bootstrap completed successfully" in result2.stdout
     
@@ -37,5 +38,5 @@ def test_idempotent_execution(tmp_path: Path):
     # So we expect 0 changes or same state.
     
     # Third run
-    result3 = runner.invoke(app, ["--docs-path", str(project_dir)])
+    result3 = runner.invoke(app, ["--docs-path", str(project_dir), "--storage-path", str(db_path)])
     assert result3.exit_code == 0

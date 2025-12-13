@@ -16,6 +16,8 @@ from src.services.data_store_gateway import DataStoreGateway
 DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/action_db")
 runner = CliRunner()
 
+PROJECT_NAME = "CLI Test Project"
+
 def _clean_test_data(conn):
     """Clean up any test data from the database."""
     with conn.cursor() as cursor:
@@ -33,7 +35,7 @@ def _clean_test_data(conn):
         cursor.execute("DELETE FROM features WHERE name = 'CLI Test Feature'")
         
         # Delete Projects
-        cursor.execute("DELETE FROM projects WHERE name = 'CLI Test Project'")
+        cursor.execute("DELETE FROM projects WHERE name = %s", (PROJECT_NAME,))
 
 @pytest.fixture(scope="module")
 def db_connection():
@@ -171,6 +173,7 @@ def test_cli_db_prepare_postgres_success(db_connection, cli_docs_root):
     result = runner.invoke(app, [
         "--docs-path", str(cli_docs_root),
         "--db-url", DB_URL,
+        "--enable-experimental-postgres",
         "--verbose" 
     ], catch_exceptions=False)
     
@@ -186,7 +189,7 @@ def test_cli_db_prepare_postgres_success(db_connection, cli_docs_root):
     # Assert Database State
     with db_connection.cursor() as cursor:
         # Check Project
-        cursor.execute("SELECT id FROM projects WHERE name = 'CLI Test Project'")
+        cursor.execute("SELECT id FROM projects WHERE name = %s", (PROJECT_NAME,))
         proj_row = cursor.fetchone()
         assert proj_row is not None, "Project not found in DB"
         proj_id = proj_row[0]
@@ -262,6 +265,51 @@ def test_cli_db_prepare_postgres_success(db_connection, cli_docs_root):
         cursor.execute("SELECT 1 FROM task_dependencies WHERE predecessor_id = %s AND successor_id = %s", (tasks['D']['id'], tasks['E']['id']))
         assert cursor.fetchone() is not None, "Missing dependency D -> E"
 
+
+def test_cli_db_prepare_postgres_requires_explicit_enablement(tmp_path):
+    root = tmp_path / "project_gate"
+    root.mkdir()
+    (root / "features").mkdir()
+    (root / "specs").mkdir()
+    (root / "tasks").mkdir()
+    (root / "dependencies").mkdir()
+
+    (root / "project.md").write_text("""---
+name: Gate Test Project
+description: Gate test via CLI
+repository_path: https://github.com/gate-test
+---
+# Gate Test Project
+""")
+    (root / "features" / "GATE-feat.md").write_text("""---
+priority: P1
+project_code: Gate Test Project
+---
+# Gate Test Feature
+""")
+    (root / "specs" / "GATE-spec.md").write_text("""---
+feature_code: Gate Test Feature
+---
+# Gate Test Spec
+""")
+    (root / "tasks" / "GATE-task.md").write_text("""---
+feature_code: Gate Test Feature
+status: pending
+task_type: implementation
+---
+# Gate Test Task
+""")
+
+    result = runner.invoke(
+        app,
+        ["--docs-path", str(root), "--db-url", f"{DB_URL}"],
+        catch_exceptions=False,
+    )
+
+    assert result.exit_code != 0
+    assert "experimental" in result.stdout.lower()
+    assert "--enable-experimental-postgres" in result.stdout
+
 def test_cli_dependency_inconsistency_failure(tmp_path):
     """
     Negative test to verify that the CLI rejects invalid dependency states.
@@ -306,7 +354,18 @@ dependencies:
 # FAIL-task-B
 """)
 
-    result = runner.invoke(app, ["--docs-path", str(root), "--db-url", f"{DB_URL}", "--force"], catch_exceptions=False)
+    result = runner.invoke(
+        app,
+        [
+            "--docs-path",
+            str(root),
+            "--db-url",
+            f"{DB_URL}",
+            "--enable-experimental-postgres",
+            "--force",
+        ],
+        catch_exceptions=False,
+    )
     
     print("\n=== FAILURE TEST OUTPUT ===")
     print(result.stdout)

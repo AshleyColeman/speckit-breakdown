@@ -4,6 +4,28 @@
 
 set -e
 
+SPECKIT_BREAKDOWN_REPO_DEFAULT="AshleyColeman/speckit-breakdown"
+SPECKIT_BREAKDOWN_REF_DEFAULT="main"
+
+SPECKIT_BREAKDOWN_REPO="${SPECKIT_BREAKDOWN_REPO:-$SPECKIT_BREAKDOWN_REPO_DEFAULT}"
+SPECKIT_BREAKDOWN_REF="${SPECKIT_BREAKDOWN_REF:-$SPECKIT_BREAKDOWN_REF_DEFAULT}"
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --repo)
+            SPECKIT_BREAKDOWN_REPO="$2"
+            shift 2
+            ;;
+        --ref)
+            SPECKIT_BREAKDOWN_REF="$2"
+            shift 2
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
 # Colors for better UX
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -117,7 +139,9 @@ if [ -f "$(dirname "$0")/workflows/speckit.breakdown.md" ]; then
     cp "$(dirname "$0")/workflows/speckit.breakdown.md" "$WORKFLOW_FILE"
 else
     # Remote installation
-    curl -fsSL "https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/workflows/speckit.breakdown.md" -o "$WORKFLOW_FILE"
+    echo -e "${CYAN}   Source: https://raw.githubusercontent.com/${SPECKIT_BREAKDOWN_REPO}/${SPECKIT_BREAKDOWN_REF}/workflows/speckit.breakdown.md${NC}"
+    echo -e "${CYAN}   Tip: Pin to a release tag/commit with: SPECKIT_BREAKDOWN_REF=<tag-or-sha> ./install.sh${NC}"
+    curl -fsSL "https://raw.githubusercontent.com/${SPECKIT_BREAKDOWN_REPO}/${SPECKIT_BREAKDOWN_REF}/workflows/speckit.breakdown.md" -o "$WORKFLOW_FILE"
 fi
 
 chmod +r "$WORKFLOW_FILE"
