@@ -6,6 +6,23 @@
 
 ---
 
+## 🛠️ Prerequisites
+
+Before installing SpecKit Breakdown, ensure you have the core SpecKit system installed:
+
+1. **Install `uv`** (if not installed):
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+2. **Install SpecKit**:
+   ```bash
+   uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+   ```
+3. **Initialize your project**:
+   ```bash
+   specify init
+   ```
+
 ## 🚀 Quick Install (For Anyone)
 
 ### Interactive Installation
@@ -229,7 +246,12 @@ SpecKit Breakdown fits perfectly into the SpecKit workflow:
 **Solution**: Add more detail to your project spec. Include specific workflows and requirements.
 
 ### Issue: ".windsurf/workflows not found"
-**Solution**: Install SpecKit first, then run this installer.
+**Solution**: Install SpecKit and initialize your project:
+```bash
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+specify init
+```
+Then run the breakdown installer again.
 
 ### Issue: "Features too large"
 **Solution**: The tool will automatically suggest splitting. Review and approve.

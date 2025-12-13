@@ -17,6 +17,11 @@ Takes your complete project plan (with all features mixed together) and intellig
 1. **SpecKit workflows installed** in your project
    - You should already have `.windsurf/workflows/` folder
    - Official SpecKit workflows: `/speckit.specify`, `/speckit.plan`, `/speckit.tasks`, etc.
+   - **How to install**:
+     ```bash
+     uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+     specify init
+     ```
 
 ### Quick Install
 

@@ -72,14 +72,29 @@ echo ""
 # Create appropriate directories based on IDE
 if [ "$IDE_TYPE" = "windsurf" ]; then
     if [ ! -d ".windsurf/workflows" ]; then
-        echo -e "${RED}❌ Error: .windsurf/workflows directory not found!${NC}"
-        echo ""
-        echo "Please install SpecKit first:"
-        echo "1. Visit https://speckit.dev (or your SpecKit source)"
-        echo "2. Follow their installation instructions"
-        echo "3. Then run this installer again"
-        echo ""
-        exit 1
+        echo -e "${YELLOW}⚠️  SpecKit not detected. Attempting to install...${NC}"
+        
+        # 1. Install CLI if missing
+        if ! command -v specify &> /dev/null; then
+            echo "Installing specify-cli..."
+            if command -v uv &> /dev/null; then
+                uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+            else
+                echo -e "${RED}❌ Error: 'uv' is not installed.${NC} Please install uv first: curl -LsSf https://astral.sh/uv/install.sh | sh"
+                exit 1
+            fi
+        fi
+
+        # 2. Initialize project
+        echo "Initializing SpecKit project..."
+        specify init
+
+        # 3. Verify again
+        if [ ! -d ".windsurf/workflows" ]; then
+             echo -e "${RED}❌ Error: Failed to initialize SpecKit.${NC} .windsurf/workflows still missing."
+             exit 1
+        fi
+        echo -e "${GREEN}✅ SpecKit installed and initialized${NC}"
     fi
     echo -e "${GREEN}✅ Found .windsurf/workflows directory${NC}"
 else
