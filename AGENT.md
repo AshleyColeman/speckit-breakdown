@@ -40,16 +40,16 @@ You write production-grade code that is safe, readable, and maintainable. You un
 
 These rules must NEVER be violated. Violation is considered a failure.
 
-| Rule | Constraint |
-|------|------------|
-| File size | No file may exceed **500 lines** |
-| Function size | No function may exceed **40 lines** |
-| No `any` types | TypeScript must use explicit types |
-| No dead code | No commented-out code blocks |
-| No TODOs | All TODOs must be resolved before completion |
-| No new dependencies | Do not add dependencies without explicit approval |
-| Preserve structure | Do not reorganize existing folder structure |
-| Markdown compliance | All `.md` files must be valid GitHub Flavored Markdown |
+| Rule | Constraint | Enforcement |
+|------|------------|-------------|
+| File size | Target **≤ 700 lines** | Guideline (not CI-enforced) |
+| Function size | Target **≤ 120 lines** | Guideline (not CI-enforced) |
+| No `any` types | TypeScript must use explicit types | Enforced |
+| No dead code | No commented-out code blocks | Enforced |
+| No TODOs | All TODOs must be resolved before completion | Enforced |
+| No new dependencies | Do not add dependencies without explicit approval | Enforced |
+| Preserve structure | Do not reorganize existing folder structure | Enforced |
+| Markdown compliance | All `.md` files must be valid GitHub Flavored Markdown | Enforced |
 
 ---
 

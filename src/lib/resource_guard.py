@@ -41,7 +41,14 @@ class ResourceGuard:
         elapsed = current - self._cpu_window_start
         if elapsed == 0:
             return
-        cpu_time = resource.getrusage(resource.RUSAGE_SELF).ru_utime
+
+        # The CPU% estimate is unstable for extremely small elapsed windows,
+        # and can frequently report near-100% for trivial programs.
+        if elapsed < 0.25:
+            return
+
+        usage = resource.getrusage(resource.RUSAGE_SELF)
+        cpu_time = usage.ru_utime + usage.ru_stime
         cpu_percent = min(100.0, (cpu_time / elapsed) * 100)
         if cpu_percent > self._limits.max_cpu_percent:
             raise RuntimeError(f"CPU usage exceeded limit: {cpu_percent:.2f}% > {self._limits.max_cpu_percent}%")

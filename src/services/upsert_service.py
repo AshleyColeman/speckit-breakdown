@@ -4,6 +4,7 @@ import logging
 from typing import Sequence
 
 from src.models.entities import ProjectDTO, FeatureDTO, SpecificationDTO, TaskDTO
+from src.services.data_store_protocol import DataStoreGatewayProtocol
 from src.services.matchers.entity_matcher import EntityMatcher
 
 logger = logging.getLogger(__name__)
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 class UpsertService:
     """Handles idempotent upsert operations for entities."""
 
-    def __init__(self, matcher: EntityMatcher, gateway: object): # gateway type hint omitted for circular dep risk?
+    def __init__(self, matcher: EntityMatcher, gateway: DataStoreGatewayProtocol) -> None:
         self._matcher = matcher
         self._gateway = gateway
 

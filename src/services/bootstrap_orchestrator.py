@@ -30,7 +30,7 @@ from src.services.validation.rules import (
     DependencyStatusRule,
 )
 from src.services.matchers.entity_matcher import EntityMatcher
-from src.services.validation_pipeline import ValidationPipeline, ValidationException
+from src.services.validation_pipeline import ValidationPipeline, ValidationException, ValidationResult
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class BootstrapSummary:
     overwritten_count: int = 0
     success: bool = True
     error_message: Optional[str] = None
-    validation_result: Optional[object] = None
+    validation_result: Optional[ValidationResult] = None
 
     @classmethod
     def empty(cls) -> "BootstrapSummary":
@@ -214,7 +214,7 @@ class BootstrapOrchestrator:
         tasks,
         dependencies,
         invalid_dependencies,
-    ):
+    ) -> ValidationResult:
         pipeline = ValidationPipeline(
             rules=[
                 RequiredFieldsRule(project, features, specs, tasks),

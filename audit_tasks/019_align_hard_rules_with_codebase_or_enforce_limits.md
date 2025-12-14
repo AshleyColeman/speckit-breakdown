@@ -31,5 +31,13 @@ Choose one:
 - Repo guidance matches actual enforcement.
 - Contributors have a clear standard that won’t cause churn.
 
+## Decision
+Option B selected: update rules.
+
+## Rationale
+- Existing modules exceed the prior 500-line and 40-line limits.
+- Enforcing the old limits would require broad refactors and introduce churn unrelated to current remediation goals.
+- Updated `AGENT.md` to treat size limits as guidelines aligned with current codebase reality.
+
 ## Non-goals
 - Aesthetic refactors unrelated to maintainability.

@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import contextlib
 import fcntl
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator
@@ -28,10 +27,16 @@ class FileLock:
     def __init__(self, lock_path: Path) -> None:
         self._lock_path = lock_path
         self._fd: int | None = None
+        self._file = None
 
-    def acquire(self) -> None:
+    def acquire(self, *, non_blocking: bool = False) -> None:
         lock_file = open(self._lock_path, "w+")  # noqa: SIM115
-        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        try:
+            flags = fcntl.LOCK_EX | (fcntl.LOCK_NB if non_blocking else 0)
+            fcntl.flock(lock_file.fileno(), flags)
+        except Exception:
+            lock_file.close()
+            raise
         self._fd = lock_file.fileno()
         self._file = lock_file
 
@@ -39,7 +44,9 @@ class FileLock:
         if self._fd is None:
             return
         fcntl.flock(self._fd, fcntl.LOCK_UN)
-        os.close(self._fd)
+        if self._file is not None:
+            self._file.close()
+            self._file = None
         self._fd = None
 
     def __enter__(self) -> "FileLock":
@@ -51,7 +58,7 @@ class FileLock:
 
 
 @contextlib.contextmanager
-def queue_lock(lock_config: LockConfig, queue_name: str) -> Iterator[None]:
+def queue_lock(lock_config: LockConfig, queue_name: str, *, non_blocking: bool = False) -> Iterator[None]:
     """
     Acquire a lock for a given queue name.
     """
@@ -59,7 +66,7 @@ def queue_lock(lock_config: LockConfig, queue_name: str) -> Iterator[None]:
     lock_config.ensure_dir()
     lock_path = lock_config.lock_dir / f"{queue_name}.lock"
     lock = FileLock(lock_path)
-    lock.acquire()
+    lock.acquire(non_blocking=non_blocking)
     try:
         yield
     finally:
