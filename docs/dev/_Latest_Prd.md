@@ -204,7 +204,7 @@ Used only if task has agent_id or tool.
 
 📘 6. Slash Command Specification
 Command:
-/speckit.db.prepare
+python -m src.cli.main [OPTIONS]
 
 Arguments:
 Flag	Description

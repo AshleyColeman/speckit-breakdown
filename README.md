@@ -176,6 +176,11 @@ docs/
 /speckit.clarify
 /speckit.plan
 /speckit.tasks
+/speckit.orchestrate
+
+# Sync to the system brain (required for implementing tasks)
+python -m src.cli.main --verbose
+
 /speckit.implement
 ```
 
@@ -319,7 +324,9 @@ This tool is designed to work seamlessly with the full SpecKit workflow:
 3. /speckit.clarify       → Resolve ambiguities
 4. /speckit.plan          → Generate implementation plan
 5. /speckit.tasks         → Create task breakdown
-6. /speckit.implement     → Execute implementation
+6. /speckit.orchestrate     → Calculate Step Order
+7. python -m src.cli.main → Sync to system brain
+8. /speckit.implement     → Execute implementation
 ```
 
 ## Examples

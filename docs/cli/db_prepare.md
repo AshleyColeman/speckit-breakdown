@@ -4,11 +4,11 @@ The `speckit.db.prepare` command initializes the local system data store by pars
 
 YAML frontmatter parsing is performed via `PyYAML` (required) to ensure deterministic behavior across environments.
 
-## Usage
+## Key Features
 
-```bash
-/speckit.db.prepare [OPTIONS]
-```
+- **Recursive Discovery**: If your documentation is nested (e.g., `specs/F01/tasks/*.md`), the system automatically discovers these files.
+- **Topological Orchestration**: Calculates the optimal execution order (Step 1, Step 2, etc.) based on task dependencies.
+- **Validation Pipeline**: Checks for circular dependencies, missing metadata, and schema drift before persisting.
 
 ## Options
 
@@ -20,7 +20,7 @@ YAML frontmatter parsing is performed via `PyYAML` (required) to ensure determin
 | `--enable-experimental-postgres` | | Allow use of PostgreSQL backend (experimental; disabled by default) | `False` |
 | `--dry-run` | | Validate and summarize changes without writing to DB | `False` |
 | `--force` | | Overwrite existing entities even if they conflict | `False` |
-| `--verbose`, `-v` | | Enable debug logging | `False` |
+| `--verbose`, `-v` | | Enable debug logging (shows **Execution Plan**) | `False` |
 | `--log-format` | | Output format (`human` or `json`) | `human` |
 
 ## Support tiers
@@ -28,43 +28,102 @@ YAML frontmatter parsing is performed via `PyYAML` (required) to ensure determin
 - **SQLite**: Stable (default).
 - **PostgreSQL**: Experimental and **disabled by default**.
 
-## PostgreSQL schema contract (experimental)
+## PostgreSQL Integration
 
-When using `--db-url postgresql://...` together with `--enable-experimental-postgres`, the CLI will **refuse to run** unless the target database already matches the expected schema contract.
+To connect to an external PostgreSQL database, you must provide a valid connection string and enable the experimental backend.
 
-Key requirements:
+### CLI Usage
+```bash
+python -m src.cli.main speckit.db.prepare \
+  --db-url "postgresql://user:password@localhost:5432/dbname" \
+  --enable-experimental-postgres
+```
 
-- The expected tables/columns must exist (e.g. `projects`, `features`, `specs`, `tasks`, `task_dependencies`).
-- `tasks.metadata` must be `json`/`jsonb` and must support `metadata->>'code'` lookups (stable identifiers are stored in `metadata['code']`).
+### Schema Requirements
+The PostgreSQL backend does **not** run migrations. It enforces a strict schema contract on startup and will refuse to run if the following tables and columns are missing or incorrectly typed:
 
-### Selective Bootstrap Options
+| Table | Required Columns | Notes |
+|-------|------------------|-------|
+| `projects` | `id`, `name`, `description`, `status` | |
+| `features` | `id`, `project_id`, `name`, `description`, `priority`, `status` | |
+| `specs` | `id`, `feature_id`, `name`, `file_path`, `status` | |
+| `tasks` | `id`, `name`, `status`, `description`, `metadata`, `feature_id`, `project_id`, `step_order` | `metadata` must be `json` or `jsonb` |
+| `task_dependencies` | `predecessor_id`, `successor_id` | |
 
-You can limit the scope of the bootstrap process to specific projects or entity types.
+> [!IMPORTANT]
+> The system requires `metadata->>'code'` lookups for stable identifiers. If `tasks.metadata` is not a JSON type, the command will fail.
 
-| Option | Shorthand | Description |
-|--------|-----------|-------------|
-| `--project` | `-p` | Limit processing to a specific project code (e.g. `P-123`). Features, Specs, and Tasks belonging to other projects will be ignored. |
-| `--skip-task-runs` | | Do not auto-create Task Run entities. |
-| `--skip-ai-jobs` | | Do not auto-create AI Job entities. |
+### Recommended PostgreSQL DDL
+If you are setting up a new PostgreSQL database, you can use the following DDL as a starting point:
+
+```sql
+CREATE TABLE projects (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL UNIQUE,
+    description TEXT,
+    status TEXT DEFAULT 'active'
+);
+
+CREATE TABLE features (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID REFERENCES projects(id),
+    name TEXT NOT NULL,
+    description TEXT,
+    priority INTEGER DEFAULT 0,
+    status TEXT DEFAULT 'planned',
+    UNIQUE(project_id, name)
+);
+
+CREATE TABLE specs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    feature_id UUID REFERENCES features(id),
+    name TEXT NOT NULL,
+    file_path TEXT,
+    status TEXT DEFAULT 'draft',
+    UNIQUE(feature_id, name)
+);
+
+CREATE TABLE tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID REFERENCES projects(id),
+    feature_id UUID REFERENCES features(id),
+    name TEXT NOT NULL,
+    description TEXT,
+    status TEXT DEFAULT 'todo',
+    step_order INTEGER DEFAULT 1,
+    metadata JSONB DEFAULT '{}'::jsonb
+);
+
+CREATE TABLE task_dependencies (
+    predecessor_id UUID REFERENCES tasks(id),
+    successor_id UUID REFERENCES tasks(id),
+    PRIMARY KEY (predecessor_id, successor_id)
+);
+```
+
+## Orchestration Plan
+
+When using `--verbose`, the system will print the calculated execution order:
+
+```text
+DEBUG | src.services.bootstrap_orchestrator - Calculated Execution Plan:
+DEBUG | src.services.bootstrap_orchestrator -   [Step 1] t001
+DEBUG | src.services.bootstrap_orchestrator -   [Step 2] t002 (Parallelizable)
+```
 
 ## Examples
 
-**1. Validate documentation without changes (Dry Run):**
+**1. Validate and view execution plan (Dry Run):**
 ```bash
-/speckit.db.prepare --dry-run
+python -m src.cli.main --dry-run --verbose
 ```
 
-**2. Bootstrap a specific project only:**
+**2. Bootstrap a nested workflow project:**
 ```bash
-/speckit.db.prepare --project P-MOBILE-APP
+python -m src.cli.main --docs-path my-project-docs/ --verbose
 ```
 
-**3. Force update an existing project:**
+**3. Force update a specific project:**
 ```bash
-/speckit.db.prepare --project P-MOBILE-APP --force
-```
-
-**4. Bootstrap core entities only (skip derived runs/jobs):**
-```bash
-/speckit.db.prepare --skip-task-runs --skip-ai-jobs
+python -m src.cli.main --project P-123 --force
 ```

@@ -109,11 +109,18 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/mai
 # Step 3: They use it!
 /speckit.breakdown docs/MY_PROJECT_SPEC.md
 
-# Done! They get:
-# - docs/project-breakdown.md
-# - docs/features/feature-01-xxx.md
-# - docs/features/feature-02-xxx.md
-# - etc.
+# Step 4: Follow the feature path
+/speckit.specify [paste description]
+/speckit.clarify
+/speckit.plan
+/speckit.tasks
+/speckit.orchestrate
+
+# Step 5: Sync to the "Brain"
+python -m src.cli.main --verbose
+
+# Step 6: Implement!
+/speckit.implement
 ```
 
 ---
@@ -189,7 +196,7 @@ Files created:
 ✅ docs/features/feature-02-dashboard.md
 ✅ ... and 4 more
 
-Next: Run /speckit.specify for F01!
+Next: Run /speckit.specify -> /speckit.plan -> /speckit.tasks -> /speckit.orchestrate -> DB Sync!
 ```
 
 ---

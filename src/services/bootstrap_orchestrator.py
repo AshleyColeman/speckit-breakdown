@@ -82,8 +82,8 @@ class BootstrapOrchestrator:
                 return BootstrapSummary.empty()
 
             features = FeatureParser(docs.features_dir, project.code).parse()
-            specs = SpecificationParser(docs.specs_dir).parse()
-            tasks = TaskParser(docs.tasks_dir).parse()
+            specs = SpecificationParser(docs.specs_dir, search_recursive=docs.is_nested).parse()
+            tasks = TaskParser(docs.tasks_dir, search_recursive=docs.is_nested).parse()
 
             # Apply scoping filters if project is specified
             if options.project:
@@ -93,7 +93,7 @@ class BootstrapOrchestrator:
                 specs = [s for s in specs if s.feature_code in valid_feature_codes]
                 tasks = [t for t in tasks if t.feature_code in valid_feature_codes]
 
-            dep_parser = DependencyParser(docs.dependencies_dir)
+            dep_parser = DependencyParser(docs.dependencies_dir, search_recursive=docs.is_nested)
             dependencies = dep_parser.parse()
             task_dependencies = dep_parser.parse_from_tasks(tasks)
             all_dependencies = list(dependencies) + list(task_dependencies)
@@ -276,6 +276,12 @@ class BootstrapOrchestrator:
                 in_degree[v] -= 1
                 if in_degree[v] == 0:
                     queue.append(v)
+
+        # Log calculated plan
+        ordered_codes = sorted(step_orders.keys(), key=lambda x: step_orders[x])
+        logger.debug("Calculated Execution Plan:")
+        for code in ordered_codes:
+            logger.debug(f"  [Step {step_orders[code]}] {code}")
 
         # Reconstruct TaskDTOs with step_order
         updated_tasks = []

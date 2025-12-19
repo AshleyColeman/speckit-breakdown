@@ -114,6 +114,11 @@ cat /tmp/speckit-breakdown/examples/nextjs-admin-panel/PROJECT_SPEC.md
 /speckit.clarify
 /speckit.plan
 /speckit.tasks
+/speckit.orchestrate
+
+# Sync to the system brain (Calculates parallel order)
+python -m src.cli.main --verbose
+
 /speckit.implement
 ```
 

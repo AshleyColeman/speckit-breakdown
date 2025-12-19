@@ -28,7 +28,7 @@ At a high level:
 
 From there, the user feeds each feature into the **core SpecKit pipeline**:
 
-- `/speckit.specify` → `/speckit.clarify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`
+- `/speckit.specify` → `/speckit.clarify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.orchestrate` → `python -m src.cli.main` → `/speckit.implement`
 
 This repo also ships a set of **advanced SpecKit commands** (001–005) that add review, orchestration, tech‑advice, and advanced SDD flows on top of that core pipeline.
 
@@ -143,7 +143,9 @@ For each `feature-XX-*.md` in the user project, the intended downstream flow is:
 2. `/speckit.clarify` – interactive ambiguity resolution
 3. `/speckit.plan` – implementation plan for the feature
 4. `/speckit.tasks` – concrete `tasks.md`
-5. `/speckit.implement` – implementation; later enhanced by features 003 and 005 below
+5. `/speckit.orchestrate` – convert `tasks.md` into ordered task docs
+6. `python -m src.cli.main` (or `/speckit.db.prepare`) – sync to the system brain
+7. `/speckit.implement` – implementation; later enhanced by features 003 and 005 below
 
 The rest of this document explains the **extra commands** and architecture that sit around that core flow.
 
@@ -408,9 +410,33 @@ To understand how everything fits together, here is a **conceptual end‑to‑en
 4. **Task Files & Orchestration**
    - `/speckit.taskfile` → generate focused `tasks/Txxx-*.md` files for individual tasks.
    - `/speckit.orchestrate` → turn `tasks.md` into an ordered set of files with explicit `order` + `parallel` metadata, using `orchestrate-tasks.sh`.
-   - `/speckit.db.prepare` → **Sync to System DB**. Parsers all tasks, verifies dependencies, calculates Topological Step Order, and persists to the database.
+   - `/speckit.db.prepare` → **Sync to System DB**. Parses all tasks, verifies dependencies, calculates Topological Step Order, and persists to the database.
 
-5. **Tests, Implementation, Sync**
+5. **The Persistence Phase (Critical Order)**
+   To maintain referential integrity (foreign keys), the `SqliteGateway` and `PostgresGateway` insert data in a strict hierarchy. If you are extending the schema, you **must** follow this order:
+   1.  `projects` (Root)
+   2.  `features` (Belongs to project)
+   3.  `specs` (Belongs to feature)
+   4.  `tasks` (Belongs to feature/spec)
+   5.  `task_dependencies` (Links two tasks)
+   6.  `task_runs` (Operational state for a task)
+   7.  `ai_jobs` (Derived work for an agent)
+
+   > [!IMPORTANT]
+   > The `step_order` (calculated during this phase) is strictly non-zero. It maps direct dependencies into sequential "steps" (Column 1, 2, 3...) while allowing independent tasks to share a step for parallel execution.
+
+7. **Storage Backends & Data Flow**
+   The system uses a **Gateway Pattern** to decouple the orchestration logic from the physical database. 
+   - **Local Storage**: By default, data is saved to `.speckit/db.sqlite`.
+   - **External Storage**: Using the `--db-url` flag with a `postgresql://` prefix redirects all persistence to an external PostgreSQL instance.
+   - **Data Flow**:
+     1. `BootstrapOrchestrator` generates DTOs from Markdown.
+     2. `DataStoreGateway` detects the connection string type.
+     3. `PostgresGateway` (or `SqliteGateway`) executes the SQL upserts in the [Critical Order](#5-the-persistence-phase-critical-order) defined above.
+   
+   For detailed setup instructions for external databases, refer to the [db_prepare.md Reference](../cli/db_prepare.md).
+
+8. **Tests, Implementation, Sync**
    - `/speckit.testgen <task-file>` → generate tests for the task using stack info from `plan.md`.
    - `/speckit.implement <task-file>` → implement that task with a test‑fix‑retry loop.
    - `/speckit.sync` → periodically reconcile code against `spec.md` and propose documentation updates.

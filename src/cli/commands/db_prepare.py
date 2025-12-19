@@ -57,7 +57,7 @@ def register(app: typer.Typer) -> None:
             help="Enable experimental PostgreSQL backend (disabled by default).",
         ),
         log_format: LogFormat = typer.Option(
-            "human",
+            LogFormat.HUMAN,
             "--log-format",
             help="Logging output format (human|json).",
         ),
@@ -97,8 +97,9 @@ def register(app: typer.Typer) -> None:
         """
         Bootstrap Speckit documentation into system data storage.
 
-        NOTE: Implementation scaffolding only (Phase 1). Later phases will
-        populate the orchestration flow.
+        Parses projects, features, specs, and tasks (including nested structures).
+        Verifies dependencies, calculates topological step orders, and persists
+        data to the configured SQLite or PostgreSQL database.
         """
 
         configure_logging(level=logging.DEBUG if verbose else logging.INFO, fmt=log_format)

@@ -19,8 +19,9 @@ logger = logging.getLogger(__name__)
 class TaskParser:
     """Parses task metadata and dependencies from markdown files in tasks/ directory."""
 
-    def __init__(self, tasks_dir: Path) -> None:
+    def __init__(self, tasks_dir: Path, search_recursive: bool = False) -> None:
         self._tasks_dir = tasks_dir
+        self._search_recursive = search_recursive
         self._title_pattern = re.compile(r'^#\s+(.+)$', re.MULTILINE)
         self._frontmatter_pattern = re.compile(r'^---\s*\n(.*?)\n---', re.MULTILINE | re.DOTALL)
         self._acceptance_pattern = re.compile(
@@ -41,8 +42,17 @@ class TaskParser:
             logger.warning(f"Tasks directory not found: {self._tasks_dir}")
             return tasks
 
-        for task_file in self._tasks_dir.glob("*.md"):
-            if task_file.parent.name.isdigit():
+        # Determine search pattern
+        # If recursive, we look for tasks in any subdirectory called 'tasks'
+        pattern = "**/tasks/*.md" if self._search_recursive else "*.md"
+
+        for task_file in self._tasks_dir.glob(pattern):
+            # If not recursive, skip numbered prefix directories (already handled separately or intended to be skipped)
+            # If recursive, we want everything but may still want to skip some things?
+            # Workflows put them in specs/NUMBER-name/tasks/ - we want those.
+            
+            # Legacy check: skip direct children if they are numbered prefix (handled below)
+            if not self._search_recursive and task_file.parent.name.isdigit():
                 continue
 
             try:
@@ -53,16 +63,18 @@ class TaskParser:
             except Exception as e:
                 raise ValueError(f"Failed to parse task file {task_file}: {e}") from e
 
-        for task_dir in self._tasks_dir.iterdir():
-            if self._is_numbered_prefix_dir(task_dir):
-                for task_file in task_dir.glob("*.md"):
-                    try:
-                        task = self._parse_task_file(task_file)
-                        tasks.append(task)
-                    except MissingYAMLDependencyError:
-                        raise
-                    except Exception as e:
-                        raise ValueError(f"Failed to parse task file {task_file}: {e}") from e
+        # Handle legacy flat structure with numbered subdirs if not recursive
+        if not self._search_recursive:
+            for task_dir in self._tasks_dir.iterdir():
+                if self._is_numbered_prefix_dir(task_dir):
+                    for task_file in task_dir.glob("*.md"):
+                        try:
+                            task = self._parse_task_file(task_file)
+                            tasks.append(task)
+                        except MissingYAMLDependencyError:
+                            raise
+                        except Exception as e:
+                            raise ValueError(f"Failed to parse task file {task_file}: {e}") from e
 
         if not tasks and (self._tasks_dir / "tasks.json").exists():
             return self._parse_json_tasks()
@@ -188,10 +200,24 @@ class TaskParser:
         return dependencies
 
     def _extract_feature_code_from_path(self, task_file: Path) -> str:
+        # 1. Check direct parent (legacy/flat)
         if bool(re.match(r"^\d+", task_file.parent.name)):
             suffix = re.sub(r"^\d+[-_]*", "", task_file.parent.name)
             return suffix.lower().replace(" ", "-").replace("_", "-")
 
+        # 2. In nested mode, look at the grandparent or higher (e.g. specs/001-login/tasks/t1.md)
+        if self._search_recursive:
+            current = task_file.parent
+            # Look up to 3 levels up for a directory starting with digits
+            for _ in range(3):
+                if current == current.parent:
+                    break
+                if bool(re.match(r"^\d+", current.name)):
+                    suffix = re.sub(r"^\d+[-_]*", "", current.name)
+                    return suffix.lower().replace(" ", "-").replace("_", "-")
+                current = current.parent
+
+        # 3. Fallback to stem
         return task_file.stem.lower().replace("-", "").replace("_", "")
 
     def _extract_task_code_from_heading(self, content: str) -> Optional[str]:

@@ -189,7 +189,12 @@ class FeatureParser:
 
     def _generate_feature_code(self, feature_file: Path) -> str:
         """Generate feature code from filename."""
-        return feature_file.stem.lower().replace(' ', '-').replace('_', '-')
+        name = feature_file.stem
+        # Strip leading F01_ or 01- or similar numbered prefixes
+        if bool(re.match(r"^[A-Za-z]?\d+", name)):
+            name = re.sub(r"^[A-Za-z]?\d+[-_]*", "", name)
+            
+        return name.lower().replace(' ', '-').replace('_', '-')
 
 
 def extract_dependencies(tasks_payload: Iterable[dict]) -> list[tuple[str, str]]:

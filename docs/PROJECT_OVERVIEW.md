@@ -211,10 +211,11 @@ speckit-breakdown/
 ### The "Brain" (Database)
 
 The `/speckit.db.prepare` command syncs your documentation to a local SQLite database that:
-- Validates task dependencies
-- Calculates execution order (topological sort)
-- Groups parallel tasks
-- Provides context for AI agents
+- **Recursive Discovery**: Automatically identifies specs and tasks nested deep within your feature folders.
+- **Dependency Validation**: Checks for circular dependencies and missing requirements.
+- **Topological Sorting**: Calculates the optimal execution order (Step 1, Step 2, etc.).
+- **Parallelization**: Groups independent tasks that can be built simultaneously.
+- **Agent Context**: Providing a high-fidelity "Brain" for autonomous coding agents.
 
 ### Context Packs
 

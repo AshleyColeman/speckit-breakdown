@@ -100,12 +100,14 @@ This is the most important step for an existing project. You need to load your n
 /speckit.specify docs/features/feature-01-update-profile-ui.md
 /speckit.plan
 /speckit.tasks
+/speckit.orchestrate
 ```
 
 **2. Push to the Database:**
 ```bash
 # This reads your project files and populates the local SQLite DB
-/speckit.db.prepare
+# Use --verbose to see the calculated Execution Plan!
+python -m src.cli.main --docs-path docs/ --verbose
 ```
 
 **Why do this?**
@@ -131,8 +133,8 @@ Now that the DB is prepped, run the implementation loop on your tasks:
 1.  [ ] **Install**: Run the `curl` installer in project root.
 2.  [ ] **MVP Spec**: Create `docs/MVP.md`.
 3.  [ ] **Breakdown**: `/speckit.breakdown docs/MVP.md`.
-4.  [ ] **Plan**: `/speckit.specify` -> `/speckit.plan` -> `/speckit.tasks`.
-5.  [ ] **Database**: `/speckit.db.prepare` (Crucial!).
+4.  [ ] **Plan**: `/speckit.specify` -> `/speckit.plan` -> `/speckit.tasks` -> `/speckit.orchestrate`.
+5.  [ ] **Database**: `python -m src.cli.main --verbose`.
 6.  [ ] **Code**: `/speckit.implement`.
 
 **You are now running SpecKit on your existing project!** 🚀

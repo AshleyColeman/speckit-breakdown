@@ -14,6 +14,7 @@ These commands are built as robust Python applications with strict validation an
 
 #### `/speckit.db.prepare`
 **Description**: Bootstraps the local data store from documentation files. 
+*   **Recursive Discovery**: Automatically finds specs and tasks nested deep within your `specs/` or `features/` folders (perfect for "Brownfield" or existing projects).
 *   **Topological Sort**: Automatically calculates the visual **Step Order** (Column 1, 2, 3...) for every task based on dependencies.
 *   **Validation**: Enforces strict rules (e.g., "Ready" tasks must have "Completed" dependencies).
 *   **Parallelism**: Correctly groups parallel siblings (A -> B, A -> C) into the same execution step.
@@ -172,11 +173,11 @@ Follow these steps in order to build a feature or project.
 *   **Action**: Generates a detailed checklist of tiny, actionable coding tasks (e.g., "Create user table", "Add login route").
 *   **Output**: A `tasks.md` file.
 
-#### 6. System Sync (`/speckit.db.prepare` & `/speckit.bundle`)
-**Goal**: **Sync your docs to the system brain.**
+#### 6. System Sync (`/speckit.orchestrate` & `/speckit.db.prepare`)
+**Goal**: **Orchestrate tasks and sync to the system brain.**
 *   **Input**: The markdown files created in previous steps.
-*   **Action**: Persists data to the local DB and creates a "Context Pack" for autonomous agents.
-*   **Output**: `db.sqlite` populated and `.speckit/context/` generated.
+*   **Action**: Runs topological sorting to create `tasks/*.md` and then persists data to the local DB.
+*   **Output**: `tasks/` populated with ordered docs and `db.sqlite` synced.
 
 #### 7. Write & Monitor (`/speckit.implement` & `/speckit.health`)
 **Goal**: Build it and keep it healthy.

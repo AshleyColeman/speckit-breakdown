@@ -8,15 +8,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Mapping
 
-REQUIRED_PATHS: Mapping[str, str] = {
-    "project": "project.md",
-    "features": "features",
-    "specs": "specs",
-    "tasks": "tasks",
-    "dependencies": "dependencies",
-}
-
-
 @dataclass(frozen=True)
 class DiscoveryResult:
     """Normalized documentation paths."""
@@ -26,6 +17,7 @@ class DiscoveryResult:
     specs_dir: Path
     tasks_dir: Path
     dependencies_dir: Path
+    is_nested: bool = False
 
     def all_paths(self) -> Iterable[Path]:
         return (
@@ -47,7 +39,14 @@ class DocumentationDiscoveryService:
         missing: list[str] = []
         resolved: dict[str, Path] = {}
 
-        for key, rel_path in REQUIRED_PATHS.items():
+        # Mandatory core items
+        mandatory = {
+            "project": "project.md",
+            "features": "features",
+            "specs": "specs",
+        }
+
+        for key, rel_path in mandatory.items():
             path = (self._docs_root / rel_path).resolve()
             exists = path.exists()
             resolved[key] = path
@@ -65,10 +64,27 @@ class DocumentationDiscoveryService:
                 f"Documentation root '{self._docs_root}' is missing required items: {missing_str}"
             )
 
+        # Optional/Nested items
+        is_nested = False
+        for key in ["tasks", "dependencies"]:
+            rel_path = key
+            path = (self._docs_root / rel_path).resolve()
+            
+            if not path.exists() or not path.is_dir():
+                # Check for nested structure in specs/
+                specs_path = resolved["specs"]
+                # If we suspect nested, we point the dir to the specs root and mark as nested
+                # The parsers will then search recursively.
+                resolved[key] = specs_path
+                is_nested = True
+            else:
+                resolved[key] = path
+
         return DiscoveryResult(
             project_file=resolved["project"],
             features_dir=resolved["features"],
             specs_dir=resolved["specs"],
             tasks_dir=resolved["tasks"],
             dependencies_dir=resolved["dependencies"],
+            is_nested=is_nested
         )

@@ -7,9 +7,12 @@ from __future__ import annotations
 import json
 import logging
 import sys
-from typing import Any, Literal, TypedDict
+from enum import Enum
+from typing import Any, TypedDict
 
-LogFormat = Literal["human", "json"]
+class LogFormat(str, Enum):
+    HUMAN = "human"
+    JSON = "json"
 
 
 class _JsonRecord(TypedDict, total=False):

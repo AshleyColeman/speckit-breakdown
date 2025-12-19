@@ -70,13 +70,17 @@ The test suite is divided into three layers:
         *   `test_install.bats`: Verifies `install-local.sh` behavior (creation of `.windsurf/workflows`, failure if SpecKit missing).
 
 ### Data Flow Validation
-When you run the PostgreSQL integration test (`test_db_prepare_postgres.py`), it validates the following "Waterfall" sequence:
+The system validates the following "Waterfall" sequence across both **flat** and **nested** structures:
 
-1.  **Project Parsing**: Reads `project.md`.
-2.  **Feature Ingestion**: Reads `features/*.md`.
-3.  **Spec Definition**: Reads `specs/*.md`.
-4.  **Task Creation**: Reads `tasks/*.md`.
-5.  **Dependencies**: Reads `TaskDependencies` block.
+1.  **Discovery**: `DocumentationDiscoveryService` detects the structure and flags `is_nested`.
+2.  **Project Parsing**: Reads `project.md`.
+3.  **Feature Ingestion**: Reads `features/*.md`.
+4.  **Recursive Parsing**: 
+    - Finds `**/spec.md` or `**/specs/*.md`.
+    - Finds `**/tasks/*.md` and `**/dependencies/*.md`.
+    - Performs **Feature Code Unification** (parent directory lookup + prefix stripping).
+5.  **Orchestration**: `BootstrapOrchestrator` calculates the topological Step Order.
+6.  **Persistence**: Data is committed to SQLite/PostgreSQL.
 
 ---
 

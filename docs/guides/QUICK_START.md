@@ -99,6 +99,11 @@ ls docs/features/
 /speckit.clarify
 /speckit.plan
 /speckit.tasks
+/speckit.orchestrate
+
+# Sync to system database (Required for implement)
+python -m src.cli.main --verbose
+
 /speckit.implement
 ```
 

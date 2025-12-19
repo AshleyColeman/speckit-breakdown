@@ -25,8 +25,9 @@ def _load_json(path: Path) -> list:
 class DependencyParser:
     """Parses task dependency relationships from markdown files and normalizes dependency edges."""
 
-    def __init__(self, dependencies_dir: Path) -> None:
+    def __init__(self, dependencies_dir: Path, search_recursive: bool = False) -> None:
         self._dependencies_dir = dependencies_dir
+        self._search_recursive = search_recursive
         self._dependency_pattern = re.compile(r'Depends on:\s*([^\n]+)', re.IGNORECASE)
         self._task_reference_pattern = re.compile(r'([A-Z]+-\d+|[a-zA-Z0-9-]+)', re.IGNORECASE)
         self._heading_task_code_pattern = re.compile(r'\b([A-Z]+-\d+|T\d+)\b')
@@ -39,23 +40,27 @@ class DependencyParser:
             logger.warning(f"Dependencies directory not found: {self._dependencies_dir}")
             return dependencies
         
+        # Determine search pattern
+        pattern = "**/dependencies/*.md" if self._search_recursive else "*.md"
+
         # Look for markdown files
-        for dep_file in self._dependencies_dir.glob("*.md"):
+        for dep_file in self._dependencies_dir.glob(pattern):
             try:
                 file_deps = self._parse_dependency_file(dep_file)
                 dependencies.extend(file_deps)
             except Exception as e:
                 raise ValueError(f"Failed to parse dependency file {dep_file}: {e}") from e
         
-        # Also look in numbered dependency directories
-        for dep_dir in self._dependencies_dir.iterdir():
-            if dep_dir.is_dir() and dep_dir.name.isdigit():
-                for dep_file in dep_dir.glob("*.md"):
-                    try:
-                        file_deps = self._parse_dependency_file(dep_file)
-                        dependencies.extend(file_deps)
-                    except Exception as e:
-                        raise ValueError(f"Failed to parse dependency file {dep_file}: {e}") from e
+        # Also look in numbered dependency directories if not recursive
+        if not self._search_recursive:
+            for dep_dir in self._dependencies_dir.iterdir():
+                if dep_dir.is_dir() and dep_dir.name.isdigit():
+                    for dep_file in dep_dir.glob("*.md"):
+                        try:
+                            file_deps = self._parse_dependency_file(dep_file)
+                            dependencies.extend(file_deps)
+                        except Exception as e:
+                            raise ValueError(f"Failed to parse dependency file {dep_file}: {e}") from e
         
         # Fallback to JSON if no markdown files found
         if not dependencies and (self._dependencies_dir / "dependencies.json").exists():

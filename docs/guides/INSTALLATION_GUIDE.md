@@ -135,6 +135,11 @@ ls docs/features/
 /speckit.clarify
 /speckit.plan
 /speckit.tasks
+/speckit.orchestrate
+
+# Sync to the system brain
+python -m src.cli.main --verbose
+
 /speckit.implement
 ```
 
@@ -236,7 +241,11 @@ SpecKit Breakdown fits perfectly into the SpecKit workflow:
    ↓
 5. /speckit.tasks         → Create task breakdown
    ↓
-6. /speckit.implement     → Execute implementation
+6. /speckit.orchestrate     → Calculate Step Order
+   ↓
+7. python -m src.cli.main → Sync to system database
+   ↓
+8. /speckit.implement     → Execute implementation
 ```
 
 ---
