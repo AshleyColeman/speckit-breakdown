@@ -13,12 +13,12 @@
 cd /path/to/your/project
 
 # Option A: Quick install from GitHub
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
 
 # Supply-chain guidance: prefer download → review → run, and pin to a tag/commit
 # Example (replace vX.Y.Z with a tag or commit SHA)
 REF=vX.Y.Z
-curl -fsSL "https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/${REF}/install.sh" -o /tmp/sb-install.sh
+curl -fsSL "https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/${REF}/install.sh" -o /tmp/sb-install.sh
 less /tmp/sb-install.sh
 chmod +x /tmp/sb-install.sh
 SPECKIT_BREAKDOWN_REF="${REF}" /tmp/sb-install.sh
@@ -26,7 +26,7 @@ rm /tmp/sb-install.sh
 
 # Option B: Manual install
 mkdir -p .windsurf/workflows docs/features
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/workflows/speckit.breakdown.md \
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/workflows/speckit.breakdown.md \
   -o .windsurf/workflows/speckit.breakdown.md
 ```
 

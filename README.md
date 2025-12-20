@@ -12,18 +12,32 @@ Takes your complete project plan (with all features mixed together) and intellig
 
 ## Installation
 
-### Prerequisites
+### Step 1: Install Original SpecKit (Required First)
 
-1. **SpecKit workflows installed** in your project
-   - You should already have `.windsurf/workflows/` folder
-   - Official SpecKit workflows: `/speckit.specify`, `/speckit.plan`, `/speckit.tasks`, etc.
-   - **How to install**:
-     ```bash
-     uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
-     specify init
-     ```
+This tool extends the official SpecKit system. You must install SpecKit first:
 
-### Quick Install
+```bash
+# Install the official SpecKit CLI
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+
+# Initialize SpecKit in your project (choose your AI assistant)
+specify init . --ai claude
+# or --ai windsurf, --ai cursor-agent, --ai gemini, etc.
+
+# Verify SpecKit is installed
+specify check
+```
+
+**What this installs:**
+- Core SpecKit workflows: `/speckit.specify`, `/speckit.plan`, `/speckit.tasks`, etc.
+- Project structure: `.windsurf/workflows/` directory
+- Base configuration and templates
+
+### Step 2: Install SpecKit Breakdown (Enhancement)
+
+Once you have SpecKit working, add the breakdown capability:
+
+#### Quick Install
 
 ```bash
 # Navigate to your project root

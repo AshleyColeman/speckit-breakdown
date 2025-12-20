@@ -92,13 +92,20 @@ This is the **happy path** for someone using `speckit-breakdown` in a separate p
 
 ### 3.1 Prerequisites
 
-- SpecKit core workflows installed (user already has `.windsurf/workflows/` with `/speckit.specify`, `/speckit.plan`, `/speckit.tasks`, etc.)
+**Critical**: Users must have the official SpecKit system installed before using SpecKit Breakdown. This is a two-step installation process:
+
+1. **Step 1**: Install official SpecKit from `github/spec-kit`
+2. **Step 2**: Install SpecKit Breakdown enhancement from this repo
+
+The tool will check for existing SpecKit workflows and guide users if they're missing.
 
 ### 3.2 Install SpecKit Breakdown
 
 From within the **user’s project root**:
 
 - **Interactive installer (recommended)** – from `install.sh` (as described in `INSTALLATION_GUIDE.md`):
+  - **Verifies official SpecKit is installed** (checks for `.windsurf/workflows/` with core commands)
+  - If SpecKit is missing, provides clear instructions to install from `github/spec-kit` first
   - Detects IDE/editor (Windsurf / Cursor / VS Code / Other)
   - Ensures `.windsurf/workflows/` exists (or creates it)
   - Copies or downloads `speckit.breakdown.md` into `.windsurf/workflows/`

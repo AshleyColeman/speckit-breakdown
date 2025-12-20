@@ -34,15 +34,15 @@ cd /tmp/speckit-breakdown
 git init
 git add .
 git commit -m "Initial release: SpecKit Breakdown v1.0.0"
-git remote add origin https://github.com/YOUR_USERNAME/speckit-breakdown.git
+git remote add origin https://github.com/AshleyColeman/speckit-breakdown.git
 git branch -M main
 git push -u origin main
 
 # 3. Update install.sh with your GitHub username
-#    Replace "YOUR_USERNAME" with actual username
+#    Replace "AshleyColeman" with actual username
 
 # 4. Now anyone can install with:
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
 ```
 
 ---
@@ -104,7 +104,7 @@ ls docs/features/
 # (Assume they already have .windsurf/workflows/)
 
 # Step 2: They install YOUR tool
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
 
 # Step 3: They use it!
 /speckit.breakdown docs/MY_PROJECT_SPEC.md

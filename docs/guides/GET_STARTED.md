@@ -28,15 +28,15 @@ cd /tmp/speckit-breakdown
 git init
 git add .
 git commit -m "Initial release v1.0.0"
-git remote add origin https://github.com/YOUR_USERNAME/speckit-breakdown.git
+git remote add origin https://github.com/AshleyColeman/speckit-breakdown.git
 git branch -M main
 git push -u origin main
 
-# 3. Edit install.sh and replace YOUR_USERNAME with your GitHub username
+# 3. Edit install.sh and replace AshleyColeman with your GitHub username
 
 # 4. Test the remote installer
 cd /path/to/another/project
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
 
 # ✅ Done! Now anyone can install it with that one command
 ```
@@ -81,7 +81,7 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/mai
 ### Step 2: Install YOUR Tool
 ```bash
 # One command (once you publish to GitHub):
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
 
 # Or locally for testing:
 /path/to/speckit-breakdown/scripts/install/install-local.sh
@@ -260,11 +260,11 @@ cd /home/ashleycoleman/Projects/product_scraper
 # Publish to GitHub
 cd /tmp/speckit-breakdown
 git init && git add . && git commit -m "v1.0.0"
-git remote add origin https://github.com/YOUR_USERNAME/speckit-breakdown.git
+git remote add origin https://github.com/AshleyColeman/speckit-breakdown.git
 git push -u origin main
 
 # Install in another project (after publishing)
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
 
 # Run the breakdown
 /speckit.breakdown docs/PROJECT_SPEC.md

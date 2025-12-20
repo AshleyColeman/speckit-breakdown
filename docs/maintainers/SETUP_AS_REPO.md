@@ -1,5 +1,29 @@
 # How to Set Up SpecKit Breakdown as a GitHub Repo
 
+## Overview
+
+SpecKit Breakdown is an **enhancement** to the official SpecKit system. Users must install SpecKit first, then add this breakdown capability.
+
+## User Installation Flow (Two-Step Process)
+
+### Step 1: Install Official SpecKit (Required)
+```bash
+# Install the official SpecKit CLI
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+
+# Initialize SpecKit in their project
+specify init . --ai claude  # or their preferred AI
+
+# Verify installation
+specify check
+```
+
+### Step 2: Install SpecKit Breakdown (Your Enhancement)
+```bash
+# From within their project (after Step 1)
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
+```
+
 ## Quick Setup (5 minutes)
 
 ### Step 1: Create GitHub Repository
@@ -30,30 +54,48 @@ git add .
 git commit -m "Initial commit: SpecKit Breakdown v1.0.0"
 
 # Add your GitHub repo as remote (replace with your username)
-git remote add origin https://github.com/YOUR_USERNAME/speckit-breakdown.git
+git remote add origin https://github.com/AshleyColeman/speckit-breakdown.git
 
 # Push to GitHub
 git branch -M main
 git push -u origin main
 ```
 
-### Step 3: Test the Installer
+### Step 3: Update Documentation to Reference Two-Step Installation
+
+Update your README.md and other documentation to clearly state the two-step installation process:
+
+1. **Original SpecKit installation first** (official GitHub repo)
+2. **Your enhancement second** (your GitHub repo)
+
+Example for your README.md:
+```markdown
+## Installation
+
+### Step 1: Install Official SpecKit (Required First)
+[Instructions to install from github/spec-kit]
+
+### Step 2: Install SpecKit Breakdown (Enhancement)
+[Instructions to install from your repo]
+```
+
+### Step 4: Test the Installer
 
 ```bash
 # Go to any test project
 cd /path/to/test/project
 
 # Run your installer
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
 ```
 
-### Step 4: Update install.sh URLs
+### Step 5: Update install.sh URLs
 
 Edit `install.sh` and replace `YOUR_USERNAME` with your actual GitHub username:
 
 ```bash
 # Line 42: Update this URL
-curl -fsSL "https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/workflows/speckit.breakdown.md" -o "$WORKFLOW_FILE"
+curl -fsSL "https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/workflows/speckit.breakdown.md" -o "$WORKFLOW_FILE"
 ```
 
 Then commit and push:
@@ -72,7 +114,7 @@ git push
 
 Users run:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
 ```
 
 ### Option 2: Copy-Paste Install
@@ -83,7 +125,7 @@ Add to README:
 mkdir -p .windsurf/workflows
 
 # Download the workflow
-curl -O https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/workflows/speckit.breakdown.md
+curl -O https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/workflows/speckit.breakdown.md
 
 # Move to workflows
 mv speckit.breakdown.md .windsurf/workflows/
@@ -96,7 +138,7 @@ mkdir -p docs/features
 
 For users who want to track updates:
 ```bash
-git submodule add https://github.com/YOUR_USERNAME/speckit-breakdown.git .speckit-breakdown
+git submodule add https://github.com/AshleyColeman/speckit-breakdown.git .speckit-breakdown
 ln -s .speckit-breakdown/workflows/speckit.breakdown.md .windsurf/workflows/
 ```
 
@@ -139,7 +181,7 @@ git push origin main --tags
 
 ```bash
 # Re-run installer to get latest
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/speckit-breakdown/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AshleyColeman/speckit-breakdown/main/install.sh | bash
 ```
 
 ---
@@ -200,7 +242,7 @@ git push
 Create `package.json`:
 ```json
 {
-  "name": "@YOUR_USERNAME/speckit-breakdown",
+  "name": "@AshleyColeman/speckit-breakdown",
   "version": "1.0.0",
   "description": "Transform projects into SpecKit-ready features",
   "bin": {
@@ -208,7 +250,7 @@ Create `package.json`:
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/speckit-breakdown"
+    "url": "https://github.com/AshleyColeman/speckit-breakdown"
   },
   "keywords": ["speckit", "project-planning", "windsurf"],
   "author": "Your Name",
@@ -218,7 +260,7 @@ Create `package.json`:
 
 Then users can:
 ```bash
-npx @YOUR_USERNAME/speckit-breakdown
+npx @AshleyColeman/speckit-breakdown
 ```
 
 ---
