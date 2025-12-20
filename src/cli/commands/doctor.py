@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List
 
 def register(app: typer.Typer) -> None:
-    @app.command("speckit.doctor")
+    @app.command("doctor")
     def doctor(
         verbose: bool = typer.Option(False, "--verbose", "-v", help="Detailed system information")
     ):

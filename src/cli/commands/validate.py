@@ -11,7 +11,7 @@ from src.validation.error_formatter import ErrorFormatter
 logger = logging.getLogger(__name__)
 
 def register(app: typer.Typer) -> None:
-    @app.command("speckit.validate")
+    @app.command("validate")
     def validate(
         strict: bool = typer.Option(False, "--strict", help="Treat warnings as errors"),
         fix: bool = typer.Option(False, "--fix", help="Auto-fix fixable issues"),

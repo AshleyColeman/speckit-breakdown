@@ -28,6 +28,7 @@ graph TD
 ### Phase I: Environment & Core Inheritance
 1. **Pull SpecKit Core**: Ensure the `speckit-breakdown` source is available *inside* the project directory.
    - *Command*: `git submodule add https://github.com/AshleyColeman/speckit-breakdown.git speckit`
+   - *Note*: If `speckit/` already exists (pre-seeded), you can skip this step.
 2. **Environment Setup**: Create and activate a local virtual environment:
    - `python3 -m venv .venv && source .venv/bin/activate`
 3. **Standalone Install**: Install SpecKit in **editable mode** from the local folder. This makes the `speckit` command available globally within the venv while pointing to the local files.

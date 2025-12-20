@@ -34,7 +34,7 @@ def _lock_name_for_run(config: BootstrapConfig, target: str) -> str:
 def register(app: typer.Typer) -> None:
     """Register the db_prepare command with the root Typer app."""
 
-    @app.command("speckit.db.prepare")
+    @app.command("db.prepare")
     def db_prepare_command(  # noqa: D401
         docs_path: Optional[Path] = typer.Option(
             None,

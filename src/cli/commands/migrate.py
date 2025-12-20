@@ -6,7 +6,7 @@ from typing import List, Optional
 from src.migration.migrator import ProjectMigrator
 
 def register(app: typer.Typer) -> None:
-    @app.command("speckit.migrate")
+    @app.command("migrate")
     def migrate(
         from_structure: str = typer.Option(..., "--from-structure", help="Current structure type (old|nested|flat)"),
         to_structure: str = typer.Option("standard", "--to-structure", help="Target structure type"),

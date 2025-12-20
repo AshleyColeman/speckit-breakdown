@@ -10,7 +10,7 @@ from src.templates.template_manager import TemplateManager
 from src.validation.validator import ProjectValidator
 
 def register(app: typer.Typer) -> None:
-    @app.command("speckit.init")
+    @app.command("init")
     def init(
         interactive: bool = typer.Option(False, "--interactive", "-i", help="Interactive setup"),
         project_name: Optional[str] = typer.Option(None, "--project-name", help="Project name"),

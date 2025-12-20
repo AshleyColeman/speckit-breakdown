@@ -9,7 +9,7 @@ from src.core.config import SpeckitConfig
 from src.templates.template_manager import TemplateManager
 
 def register(app: typer.Typer) -> None:
-    @app.command("speckit.breakdown")
+    @app.command("breakdown")
     def breakdown(
         mvp_file: Path = typer.Argument(..., help="Path to MVP.md file"),
         output_dir: Path = typer.Option(Path.cwd(), "--output-dir", "-o", help="Output directory"),
