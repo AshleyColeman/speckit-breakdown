@@ -94,7 +94,7 @@ class SpecificationParser:
         return SpecificationDTO(
             code=spec_code,
             feature_code=feature_code,
-            title=title,
+            title=str(title),
             path=str(spec_file.relative_to(self._specs_dir.parent)),
             metadata=metadata,
         )

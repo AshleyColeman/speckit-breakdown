@@ -79,3 +79,6 @@ python -m src.cli.main speckit.db.prepare --docs-path docs/
 - [ ] `breakdown` splits MVP into features
 - [ ] `validate` confirms 100% structural integrity
 - [ ] `db.prepare` synchronizes the "Brain"
+
+## 6. What's Next?
+Once your foundation is synced, switch to the [Implementation Agent Guide](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/IMPLEMENTATION_AGENT.md) to begin the coding phase.

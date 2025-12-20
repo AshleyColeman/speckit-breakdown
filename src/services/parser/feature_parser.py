@@ -63,12 +63,17 @@ class FeatureParser:
         metadata = self._extract_frontmatter(content)
         
         # Extract description from frontmatter or content
-        description = metadata.get('description', '')
+        raw_description = metadata.get('description', '')
+        if isinstance(raw_description, list):
+            description = '\n'.join(map(str, raw_description))
+        else:
+            description = str(raw_description)
+
         if not description:
             description = self._extract_description_from_content(content)
         
         # Extract priority from metadata or default to P2
-        priority = metadata.get('priority', 'P2')
+        priority = str(metadata.get('priority', 'P2'))
         
         # Generate feature code from filename
         feature_code = metadata.get('code')

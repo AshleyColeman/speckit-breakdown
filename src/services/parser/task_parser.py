@@ -95,12 +95,17 @@ class TaskParser:
             if not any(ch.isspace() for ch in feature_code):
                 feature_code = feature_code.lower()
 
-        status = metadata.get("status", "pending")
-        task_type = metadata.get("task_type", "implementation")
+        status = str(metadata.get("status", "pending"))
+        task_type = str(metadata.get("task_type", "implementation"))
 
-        acceptance = self._extract_acceptance_criteria(content)
-        if not acceptance:
-            acceptance = metadata.get("acceptance", "")
+        raw_acceptance = self._extract_acceptance_criteria(content)
+        if not raw_acceptance:
+            raw_acceptance = metadata.get("acceptance", "")
+            
+        if isinstance(raw_acceptance, list):
+            acceptance = "\n".join(map(str, raw_acceptance))
+        else:
+            acceptance = str(raw_acceptance)
 
         dependencies = self._extract_dependencies(content)
         if dependencies:
@@ -117,7 +122,7 @@ class TaskParser:
         return TaskDTO(
             code=task_code,
             feature_code=feature_code,
-            title=title,
+            title=str(title),
             status=status,
             task_type=task_type,
             acceptance=acceptance,

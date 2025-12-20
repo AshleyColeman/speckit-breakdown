@@ -230,13 +230,31 @@ class SqliteGateway:
     @_retry_sqlite_operation()
     def create_or_update_projects(self, projects: Sequence[ProjectDTO]) -> None:
         self._log_entities("projects", projects)
-        data = [(p.code, p.name, p.description, json.dumps(p.metadata)) for p in projects]
+        data = [
+            (
+                str(p.code),
+                str(p.name) if p.name is not None else None,
+                str(p.description) if p.description is not None else None,
+                json.dumps(p.metadata),
+            )
+            for p in projects
+        ]
         self._execute_upsert("projects", ["code", "name", "description", "metadata"], data)
 
     @_retry_sqlite_operation()
     def create_or_update_features(self, features: Sequence[FeatureDTO]) -> None:
         self._log_entities("features", features)
-        data = [(f.code, f.project_code, f.name, f.description, f.priority, json.dumps(f.metadata)) for f in features]
+        data = [
+            (
+                str(f.code),
+                str(f.project_code),
+                str(f.name) if f.name is not None else None,
+                "\n".join(map(str, f.description)) if isinstance(f.description, list) else str(f.description) if f.description is not None else None,
+                str(f.priority) if f.priority is not None else None,
+                json.dumps(f.metadata),
+            )
+            for f in features
+        ]
         self._execute_upsert(
             "features", ["code", "project_code", "name", "description", "priority", "metadata"], data
         )
@@ -244,14 +262,32 @@ class SqliteGateway:
     @_retry_sqlite_operation()
     def create_or_update_specs(self, specs: Sequence[SpecificationDTO]) -> None:
         self._log_entities("specifications", specs)
-        data = [(s.code, s.feature_code, s.title, s.path, json.dumps(s.metadata)) for s in specs]
+        data = [
+            (
+                str(s.code),
+                str(s.feature_code),
+                str(s.title) if s.title is not None else None,
+                str(s.path) if s.path is not None else None,
+                json.dumps(s.metadata),
+            )
+            for s in specs
+        ]
         self._execute_upsert("specs", ["code", "feature_code", "title", "path", "metadata"], data)
 
     @_retry_sqlite_operation()
     def create_or_update_tasks(self, tasks: Sequence[TaskDTO]) -> None:
         self._log_entities("tasks", tasks)
         data = [
-            (t.code, t.feature_code, t.title, t.status, t.task_type, t.acceptance, t.step_order, json.dumps(t.metadata))
+            (
+                str(t.code),
+                str(t.feature_code),
+                str(t.title) if t.title is not None else None,
+                str(t.status) if t.status is not None else None,
+                str(t.task_type) if t.task_type is not None else None,
+                "\n".join(map(str, t.acceptance)) if isinstance(t.acceptance, list) else str(t.acceptance) if t.acceptance is not None else None,
+                t.step_order,
+                json.dumps(t.metadata),
+            )
             for t in tasks
         ]
         self._execute_upsert(
