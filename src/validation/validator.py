@@ -34,7 +34,8 @@ class ProjectValidator:
             FrontmatterRule,
             DuplicateCodeRule,
             CrossReferenceRule,
-            JsonSchemaRule
+            JsonSchemaRule,
+            ReferentialIntegrityRule
         )
         self.rules = [
             DirectoryStructureRule(config, project_root),
@@ -42,7 +43,8 @@ class ProjectValidator:
             FrontmatterRule(config, project_root),
             DuplicateCodeRule(config, project_root),
             CrossReferenceRule(config, project_root),
-            JsonSchemaRule(config, project_root)
+            JsonSchemaRule(config, project_root),
+            ReferentialIntegrityRule(config, project_root)
         ]
     
     def validate(self, strict: bool = False) -> ValidationResult:

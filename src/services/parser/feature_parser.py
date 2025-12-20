@@ -71,7 +71,11 @@ class FeatureParser:
         priority = metadata.get('priority', 'P2')
         
         # Generate feature code from filename
-        feature_code = self._generate_feature_code(feature_file)
+        feature_code = metadata.get('code')
+        if not feature_code:
+            feature_code = self._generate_feature_code(feature_file)
+        else:
+            feature_code = str(feature_code).strip().lower()
         
         return FeatureDTO(
             code=feature_code,
@@ -190,9 +194,14 @@ class FeatureParser:
     def _generate_feature_code(self, feature_file: Path) -> str:
         """Generate feature code from filename."""
         name = feature_file.stem
+        raw_name = name
         # Strip leading F01_ or 01- or similar numbered prefixes
         if bool(re.match(r"^[A-Za-z]?\d+", name)):
             name = re.sub(r"^[A-Za-z]?\d+[-_]*", "", name)
+            
+        # If stripping everything resulted in empty string (e.g. f01.md), keep the raw name
+        if not name:
+            name = raw_name
             
         return name.lower().replace(' ', '-').replace('_', '-')
 

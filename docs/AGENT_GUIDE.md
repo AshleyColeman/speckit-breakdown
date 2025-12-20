@@ -48,6 +48,15 @@ All SpecKit slash commands MUST be mapped to the local CLI implementation for co
    - `docs/specs/*-spec.md` (linked to features)
    - `docs/tasks/tasks.json` (ready for population)
 
+### 1. Project Structure (`speckit.init`)
+Agents **MUST** begin by establishing a compliant workspace. This command creates the mandatory directory structure and the configuration file.
+
+- **Mandatory Directories**: `docs/features/`, `docs/specs/`, `docs/tasks/`.
+- **Mandatory Files**: `speckit.yaml`, `docs/project.md`.
+
+> [!NOTE] 
+> `project.md` is automatically created during `init` or `breakdown` and is required for database synchronization (`db.prepare`).
+
 ### Phase C: Hardening & Validation
 1. Populate `docs/tasks/tasks.json` with your technical breakdown.
 2. Run `speckit.validate`.

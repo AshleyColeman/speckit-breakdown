@@ -55,8 +55,15 @@ def register(app: typer.Typer) -> None:
                 (project_root / dir_path).mkdir(parents=True, exist_ok=True)
             
             # Create example files if requested
+            template_manager = TemplateManager(config, project_root)
+            
+            # ALWAYS create project.md as it is required by the core system
+            template_manager.create_project_file(
+                config.project['name'].lower().replace(' ', '-'),
+                config.project['name']
+            )
+
             if create_examples:
-                template_manager = TemplateManager(config, project_root)
                 
                 # Create example feature
                 template_manager.create_feature_file(

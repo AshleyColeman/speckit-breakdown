@@ -18,6 +18,11 @@ class TestUnifiedParser:
         for dir_path in config.directories.__dict__.values():
             (temp_dir / dir_path).mkdir(parents=True, exist_ok=True)
             
+        # Create project.md
+        docs_dir = temp_dir / config.directories.features
+        if docs_dir.name == 'features': docs_dir = docs_dir.parent
+        (docs_dir / "project.md").write_text("---\ncode: parser-project\n---")
+            
         yield temp_dir
         shutil.rmtree(temp_dir)
         

@@ -85,7 +85,11 @@ class SpecificationParser:
             if not any(ch.isspace() for ch in feature_code):
                 feature_code = feature_code.lower()
 
-        spec_code = self._generate_spec_code(spec_file)
+        spec_code = metadata.get("code")
+        if not spec_code:
+            spec_code = self._generate_spec_code(spec_file)
+        else:
+            spec_code = str(spec_code).strip().lower()
 
         return SpecificationDTO(
             code=spec_code,

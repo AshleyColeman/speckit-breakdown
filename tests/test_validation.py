@@ -83,6 +83,7 @@ class TestEndToEnd:
         template_manager = TemplateManager(config, temp_dir)
         
         # Create feature first so spec ref is valid
+        template_manager.create_project_file("test-project", "Test Project")
         template_manager.create_feature_file("test-feature", "Test Feature")
         template_manager.create_spec_file("test-feature", "Test Feature")
         template_manager.create_tasks_file()

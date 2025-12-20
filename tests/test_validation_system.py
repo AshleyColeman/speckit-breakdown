@@ -45,6 +45,11 @@ class TestValidationSystem:
         
         for dir_path in config.directories.__dict__.values():
             (temp_project / dir_path).mkdir(parents=True, exist_ok=True)
+        
+        # Create project.md
+        docs_dir = temp_project / config.directories.features
+        if docs_dir.name == 'features': docs_dir = docs_dir.parent
+        (docs_dir / "project.md").write_text("---\ncode: test-project\n---")
             
         result = validator.validate()
         assert result.is_valid

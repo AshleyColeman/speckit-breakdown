@@ -6,6 +6,20 @@ class FileTemplates:
     """Standardized templates for all file types"""
     
     @staticmethod
+    def project_template(project_code: str, project_name: str) -> str:
+        return f"""---
+code: {project_code}
+name: "{project_name}"
+type: project
+status: active
+---
+
+# Project: {project_name}
+
+[Enter high-level project description here]
+"""
+
+    @staticmethod
     def feature_template(feature_code: str, feature_name: str) -> str:
         return f"""---
 code: {feature_code}

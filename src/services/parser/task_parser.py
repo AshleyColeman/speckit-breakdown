@@ -107,7 +107,12 @@ class TaskParser:
             metadata["dependencies"] = dependencies
 
         heading_code = self._extract_task_code_from_heading(content)
-        task_code = heading_code or self._generate_task_code(task_file)
+        
+        task_code = metadata.get("code")
+        if not task_code:
+            task_code = heading_code or self._generate_task_code(task_file)
+        else:
+            task_code = str(task_code).strip().upper()
 
         return TaskDTO(
             code=task_code,
