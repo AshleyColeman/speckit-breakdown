@@ -46,12 +46,13 @@ class DuplicateCodeRule(ValidationRule):
                         if len(parts) >= 2:
                             data = yaml.safe_load(parts[1])
                             if isinstance(data, dict) and key in data:
-                                code = data[key]
+                                # Case-insensitive collision detection
+                                code = str(data[key]).lower()
                                 if code in seen_codes:
                                     prev_path = seen_codes[code]
                                     errors.append(ValidationError(
                                         code="ERR_DUPLICATE_CODE",
-                                        message=f"Duplicate code found: '{code}' in {file_path.name} and {prev_path.name}",
+                                        message=f"Duplicate code found (case-insensitive): '{code}' in {file_path.name} and {prev_path.name}",
                                         file_path=file_path,
                                         suggestion=f"Change the code in one of the files to be unique",
                                         auto_fixable=False

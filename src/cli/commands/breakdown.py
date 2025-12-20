@@ -44,7 +44,8 @@ def register(app: typer.Typer) -> None:
         
         for i, match in enumerate(feature_matches):
             feature_name = match.group(1).strip()
-            feature_code = f"F{i+1:02d}"
+            # Standardized Lowercase Codes
+            feature_code = f"f{i+1:02d}"
             
             # Create feature
             typer.echo(f"   • Creating Feature: {feature_code} ({feature_name})")

@@ -1,31 +1,31 @@
-# SpecKit Agent Integration Guide
+# SpecKit Agent Integration Guide (Extreme Reliability)
 
-This guide is the **source of truth** for AI coding agents to ensure a 100% reliable setup and execution of the SpecKit system.
+This guide is the **absolute source of truth** for AI coding agents. Follow this to achieve a 100% deterministic, error-free project setup.
 
 > [!IMPORTANT]
-> **Agent Policy**: You MUST run all commands in the "Golden Path" pipeline by default. Do not wait for user permission to advance steps (e.g., going from Breakdown to Validate to Sync) unless explicitly told to stop.
+> **Agent Execution Policy**: You MUST run all commands in the "Golden Path" by default. Do not wait for user input between steps. Your goal is to move from a raw `MVP.md` to a validated, synced database autonomously.
 
-## 1. Installation & Environment
+## 1. Environment Mastery
 
-### Step 1: Install SpecKit Core
+### Step 1: Core Tooling
 ```bash
 uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 specify init . --ai gemini
 ```
 
-### Step 2: Install Reliability Extension (This Repo)
+### Step 2: Reliability Extension Setup
 ```bash
-# Clone the repository
 git clone https://github.com/AshleyColeman/speckit-breakdown.git
 cd speckit-breakdown
-# Install dependencies
 pip install -r requirements.txt
+# OPTIONAL: Add to your path or use PYTHONPATH for easy access
+export PYTHONPATH=$PYTHONPATH:$(pwd)
 ```
 
-## 2. Command Mapping
-The following slash commands commonly used in SpecKit correspond to these local CLI invocations:
+## 2. Universal Command Mapping
+All SpecKit slash commands MUST be mapped to the local CLI implementation for consistency:
 
-| Slash Command | Local CLI Command |
+| Slash Command | Full CLI Invocation |
 |---------------|-------------------|
 | `/speckit.init` | `python -m src.cli.main speckit.init` |
 | `/speckit.breakdown` | `python -m src.cli.main speckit.breakdown` |
@@ -34,37 +34,39 @@ The following slash commands commonly used in SpecKit correspond to these local 
 | `/speckit.doctor` | `python -m src.cli.main speckit.doctor` |
 | `/speckit.migrate` | `python -m src.cli.main speckit.migrate` |
 
-## 3. The "Golden Path" (Run All By Default)
+## 3. The Autonomous "Golden Path"
 
-Follow this sequence for every project to ensure zero errors:
+### Phase A: Environment Audit
+1. **Always** start with `speckit.doctor` to verify dependencies.
+2. If `speckit.yaml` is missing, run `speckit.init` immediately.
 
-### Phase 1: Exploration & Setup
-1. **Health Check**: Run `speckit.doctor` to verify the environment.
-2. **Initialization**: Run `speckit.init` to scaffold `speckit.yaml` and folders.
+### Phase B: Decomposition (From MVP to Features)
+1. Run `speckit.breakdown <your-mvp>.md`.
+2. This command automatically enforces **lowercase naming** and **lowercase codes** for system compatibility.
+3. It generates:
+   - `docs/features/*.md` (with YAML frontmatter)
+   - `docs/specs/*-spec.md` (linked to features)
+   - `docs/tasks/tasks.json` (ready for population)
 
-### Phase 2: Breakdown & Generation
-3. **Breakdown**: Run `speckit.breakdown MVP.md` (or your project spec) to generate features and specs.
-4. **Detailing**: For each feature, create the detailed `spec.md` and update `tasks.json`.
+### Phase C: Hardening & Validation
+1. Populate `docs/tasks/tasks.json` with your technical breakdown.
+2. Run `speckit.validate`.
+3. If errors arise, **always** run `speckit.validate --fix` before doing manual work.
 
-### Phase 3: Validation & Sync
-5. **Validation**: Run `speckit.validate`. Fix any blocking errors immediately.
-6. **Auto-Fix**: If errors exist, run `speckit.validate --fix`.
-7. **Database Sync**: Run `speckit.db.prepare --docs-path docs/`.
+### Phase D: Storage Synchronization
+1. Once validation returns `✅`, run the sync:
+```bash
+python -m src.cli.main speckit.db.prepare --docs-path docs/
+```
 
-## 4. Feature & Spec Requirements (Strict)
-To ensure the "Brain" (Database) can index your work, you MUST follow these standards:
-- **Features**: `docs/features/*.md` with top-level `code` and `project_code` in YAML frontmatter.
-- **Specifications**: `docs/specs/*-spec.md` with `code` and `feature_code` in YAML frontmatter.
-- **Tasks**: Use **ONLY** `docs/tasks/tasks.json`. The system no longer parses Markdown tasks by default for reliability.
+## 4. Operational Guardrails
+- **Naming Rule**: Only use lowercase alphanumeric and dashes for all codes and filenames. The system will reject anything else.
+- **Frontmatter**: Every feature and spec **MUST** have a `code` field. Brittle fallback logic is disabled for safety.
+- **Task Source**: Use **ONLY** `tasks.json`. Do not attempt to parse tasks from Markdown files.
 
-## 5. Troubleshooting for Agents
-- If `db.prepare` fails, check `speckit.doctor` first.
-- If features aren't found, verify `speckit.yaml` paths match your directory structure.
-- If recursive discovery is acting strange, run `speckit.validate` to check for circular or broken references.
-
-## 6. Agent Summary Checklist
-- [ ] Environment verified with `doctor`
-- [ ] Project initialized with `init`
-- [ ] Features/Specs/Tasks generated with `breakdown`
-- [ ] Structure/Reference checked with `validate`
-- [ ] Data synced to SQLite with `db.prepare`
+## 5. Summary Checklist for Success
+- [ ] `doctor` returns clean check
+- [ ] `init` creates `speckit.yaml`
+- [ ] `breakdown` splits MVP into features
+- [ ] `validate` confirms 100% structural integrity
+- [ ] `db.prepare` synchronizes the "Brain"

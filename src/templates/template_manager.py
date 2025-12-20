@@ -17,6 +17,7 @@ class TemplateManager:
         features_dir = self.project_root / self.config.directories.features
         features_dir.mkdir(parents=True, exist_ok=True)
         
+        feature_code = feature_code.lower()
         file_path = features_dir / f"{feature_code}.md"
         content = FileTemplates.feature_template(feature_code, feature_name)
         
@@ -32,6 +33,7 @@ class TemplateManager:
         specs_dir = self.project_root / self.config.directories.specs
         specs_dir.mkdir(parents=True, exist_ok=True)
         
+        feature_code = feature_code.lower()
         file_path = specs_dir / f"{feature_code}-spec.md"
         content = FileTemplates.spec_template(feature_code, feature_name)
         

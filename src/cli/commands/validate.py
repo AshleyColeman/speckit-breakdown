@@ -50,6 +50,8 @@ def register(app: typer.Typer) -> None:
             else:
                 raise typer.Exit(code=0)
                 
+        except typer.Exit:
+            raise
         except Exception as e:
             typer.echo(f"❌ Validation failed: {e}", err=True)
             raise typer.Exit(code=1)

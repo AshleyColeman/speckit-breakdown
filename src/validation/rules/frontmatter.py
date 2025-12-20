@@ -80,6 +80,14 @@ class FrontmatterRule(ValidationRule):
                                             suggestion="Add 'code: <unique-id>' to frontmatter",
                                             auto_fixable=False
                                         ))
+                                    elif not str(data['code']).islower():
+                                         errors.append(ValidationError(
+                                            code="ERR_FIELD_CASE",
+                                            message=f"Feature 'code' must be lowercase: {data['code']}",
+                                            file_path=file_path,
+                                            suggestion=f"Change to '{str(data['code']).lower()}'",
+                                            auto_fixable=True
+                                        ))
                                 elif "specs" in str(dir_path):
                                     if 'code' not in data:
                                         errors.append(ValidationError(
@@ -89,6 +97,15 @@ class FrontmatterRule(ValidationRule):
                                             suggestion="Add 'code: <unique-id>-spec' to frontmatter",
                                             auto_fixable=False
                                         ))
+                                    elif not str(data['code']).islower():
+                                         errors.append(ValidationError(
+                                            code="ERR_FIELD_CASE",
+                                            message=f"Spec 'code' must be lowercase: {data['code']}",
+                                            file_path=file_path,
+                                            suggestion=f"Change to '{str(data['code']).lower()}'",
+                                            auto_fixable=True
+                                        ))
+
                                     if 'feature_code' not in data:
                                         errors.append(ValidationError(
                                             code="ERR_MISSING_FIELD_FEATURE_REF",
@@ -96,6 +113,14 @@ class FrontmatterRule(ValidationRule):
                                             file_path=file_path,
                                             suggestion="Add 'feature_code: <feature-unique-id>' to frontmatter",
                                             auto_fixable=False
+                                        ))
+                                    elif not str(data['feature_code']).islower():
+                                         errors.append(ValidationError(
+                                            code="ERR_FIELD_CASE",
+                                            message=f"Spec 'feature_code' must be lowercase: {data['feature_code']}",
+                                            file_path=file_path,
+                                            suggestion=f"Change to '{str(data['feature_code']).lower()}'",
+                                            auto_fixable=True
                                         ))
 
                         except yaml.YAMLError as e:
@@ -115,3 +140,38 @@ class FrontmatterRule(ValidationRule):
                     ))
         
         return errors
+    
+    def auto_fix(self) -> None:
+        """Fix field casing in frontmatter"""
+        dirs_to_check = [
+            self.project_root / self.config.directories.features,
+            self.project_root / self.config.directories.specs
+        ]
+        
+        for dir_path in dirs_to_check:
+            if not dir_path.exists(): continue
+            for file_path in dir_path.glob("*.md"):
+                try:
+                    content = file_path.read_text(encoding='utf-8')
+                    if not content.startswith('---'): continue
+                    
+                    parts = content.split('---', 2)
+                    if len(parts) < 3: continue
+                    
+                    data = yaml.safe_load(parts[1])
+                    if not isinstance(data, dict): continue
+                    
+                    changed = False
+                    for key in ['code', 'feature_code', 'project_code']:
+                        if key in data and str(data[key]) != str(data[key]).lower():
+                            data[key] = str(data[key]).lower()
+                            changed = True
+                    
+                    if changed:
+                        new_frontmatter = yaml.dump(data, default_flow_style=False)
+                        new_content = f"--- \n{new_frontmatter}---{parts[2]}"
+                        file_path.write_text(new_content, encoding='utf-8')
+                        logger.info(f"Fixed frontmatter casing in {file_path.name}")
+                        
+                except Exception:
+                    continue
