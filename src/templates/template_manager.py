@@ -68,3 +68,14 @@ class TemplateManager:
         
         file_path.write_text(content, encoding='utf-8')
         return file_path
+
+    def create_implementation_plan(self) -> Path:
+        """Create implementation_plan.md from template"""
+        docs_dir = self.project_root / "docs"
+        docs_dir.mkdir(parents=True, exist_ok=True)
+        
+        file_path = docs_dir / "implementation_plan.md"
+        content = FileTemplates.implementation_plan_template()
+        
+        file_path.write_text(content, encoding='utf-8')
+        return file_path

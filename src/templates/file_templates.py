@@ -92,3 +92,27 @@ title: "Specification: {feature_name}"
     }
   }
 ]"""
+    @staticmethod
+    def implementation_plan_template() -> str:
+        return """# Implementation Plan
+
+## User Review Required
+
+> [!IMPORTANT]
+> Critical items requiring user attention.
+
+## Proposed Changes
+
+### [Component Name]
+
+#### [MODIFY] [file basename](file:///absolute/path/to/modifiedfile)
+#### [NEW] [file basename](file:///absolute/path/to/newfile)
+
+## Verification Plan
+
+### Automated Tests
+- `pytest tests/test_feature.py`
+
+### Manual Verification
+- Verify usage of...
+"""
