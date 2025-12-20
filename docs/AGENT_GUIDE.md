@@ -1,9 +1,12 @@
 ## The SpecKit Agent Journey
 
-SpecKit divides AI development into two distinct roles to ensure maximum reliability and parallel throughput:
+SpecKit divides AI development into specialized roles to ensure maximum reliability and scale. Start with the **[Agent Roadmap Index](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/AGENT_INDEX.md)** to see the full pipeline.
 
-1.  **[The Architect Agent](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/ARCHITECT_AGENT.md)**: Turns an MVP into a validated roadmap. (Breakdown -> Design -> Orchestration).
-2.  **[The Implementation Agent](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/IMPLEMENTATION_AGENT.md)**: Turns the roadmap into code. (Coding -> Testing -> Hardening).
+1.  **[The Bootstrap Agent](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/BOOTSTRAP_AGENT.md)**: Initializes environment and DB.
+2.  **[The Breakdown Agent](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/BREAKDOWN_AGENT.md)**: MVP -> Features.
+3.  **[The Specification Agent](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/SPECIFICATION_AGENT.md)**: Feature -> Spec & Plan.
+4.  **[The Orchestration Agent](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/ORCHESTRATION_AGENT.md)**: Planning -> Tasking & Parallelization.
+5.  **[The Implementation Agent](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/IMPLEMENTATION_AGENT.md)**: Implementation & Testing.
 
 > [!IMPORTANT]
 > **Agent Execution Policy**: You MUST run all commands in the "Golden Path" by default. Do not wait for user input between steps. Your goal is to move from a raw `MVP.md` to a validated, synced database autonomously.

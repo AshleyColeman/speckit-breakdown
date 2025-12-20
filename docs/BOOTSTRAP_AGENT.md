@@ -25,11 +25,14 @@ graph TD
 
 ## 3. Detailed Execution Phases
 
-### Phase I: Environment Setup
-1. **Initialize CLI**: Ensure `speckit` is available in the path. If not, link it:
-   - `export PYTHONPATH=$PYTHONPATH:$(pwd)`
-2. **Configuration**: Run `speckit init --ai gemini --script sh` (or appropriate flags).
-3. **Verify Configuration**: Check that `speckit.yaml` was created in the root.
+### Phase I: Environment & Core Inheritance
+1. **Pull SpecKit Core**: Ensure the `speckit-breakdown` source is available *inside* the project directory (e.g., in a `speckit/` or `vendor/speckit/` folder). This makes the project standalone.
+   - *Command*: `git submodule add https://github.com/AshleyColeman/speckit-breakdown.git speckit` (or a direct copy).
+2. **Environment Setup**: Create a local virtual environment:
+   - `uv venv` or `python -m venv .venv`
+   - `source .venv/bin/activate`
+   - `pip install -r speckit/requirements.txt`
+3. **Configuration**: Run `python -m speckit.src.cli.main speckit.init --project-name <NAME>`.
 
 ### Phase II: Structural Foundations
 1. **Project Metadata**: Create `docs/project.md` if it doesn't exist.
