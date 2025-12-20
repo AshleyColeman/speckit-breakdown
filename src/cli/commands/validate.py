@@ -20,8 +20,8 @@ def register(app: typer.Typer) -> None:
     ):
         """Validate project structure and files"""
         
-        project_root = Path.cwd()
-        config_file = project_root / config_path
+        config_file = config_path.absolute()
+        project_root = config_file.parent
         
         try:
             # Load configuration

@@ -1,6 +1,9 @@
-# SpecKit Agent Integration Guide (Extreme Reliability)
+## The SpecKit Agent Journey
 
-This guide is the **absolute source of truth** for AI coding agents. Follow this to achieve a 100% deterministic, error-free project setup.
+SpecKit divides AI development into two distinct roles to ensure maximum reliability and parallel throughput:
+
+1.  **[The Architect Agent](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/ARCHITECT_AGENT.md)**: Turns an MVP into a validated roadmap. (Breakdown -> Design -> Orchestration).
+2.  **[The Implementation Agent](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/IMPLEMENTATION_AGENT.md)**: Turns the roadmap into code. (Coding -> Testing -> Hardening).
 
 > [!IMPORTANT]
 > **Agent Execution Policy**: You MUST run all commands in the "Golden Path" by default. Do not wait for user input between steps. Your goal is to move from a raw `MVP.md` to a validated, synced database autonomously.
@@ -80,5 +83,20 @@ python -m src.cli.main speckit.db.prepare --docs-path docs/
 - [ ] `validate` confirms 100% structural integrity
 - [ ] `db.prepare` synchronizes the "Brain"
 
-## 6. What's Next?
-Once your foundation is synced, switch to the [Implementation Agent Guide](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/IMPLEMENTATION_AGENT.md) to begin the coding phase.
+## 6. What's Next? (The Developer Journey)
+
+Once the project is initialized and the breakdown is complete, the development lifecycle transitions through these specific protocols:
+
+1.  **Architect Role**: Use the **[Architect Agent Protocol](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/ARCHITECT_AGENT.md)** to finalize the design and tasks.
+2.  **Implementation Role**: Once tasks are "Ready" in the DB, use the **[Implementation Agent Protocol](file:///home/ashleycoleman/Projects/speckit-breakdown/docs/IMPLEMENTATION_AGENT.md)** to write code.
+
+---
+
+## 7. The "Master Workflow" Summary
+1. `speckit.breakdown` (Decompose)
+2. `speckit specify` (Detail)
+3. `speckit plan` (Design)
+4. `speckit tasks` (Roadmap)
+5. `speckit.db.prepare` (Orchestrate)
+6. `speckit.implement` (Build)
+7. `speckit validate` (Verify)
