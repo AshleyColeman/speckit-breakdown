@@ -1,0 +1,16 @@
+directories:
+  dependencies: docs/dependencies
+  features: docs/features
+  specs: docs/specs
+  tasks: docs/tasks
+naming:
+  features: feature-code.md
+  specs: feature-code-spec.md
+  tasks: tasks.json
+project:
+  name: my-project
+  structure: standard
+validation:
+  auto_fix: true
+  require_frontmatter: true
+  strict: true

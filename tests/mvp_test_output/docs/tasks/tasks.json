@@ -1,0 +1,15 @@
+[
+  {
+    "code": "FEATURE-T001",
+    "feature_code": "feature-code",
+    "title": "Task title",
+    "status": "pending",
+    "task_type": "implementation",
+    "acceptance": "Clear acceptance criteria",
+    "metadata": {
+      "dependencies": [],
+      "estimated_hours": 8,
+      "priority": "high"
+    }
+  }
+]
