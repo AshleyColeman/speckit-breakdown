@@ -27,7 +27,7 @@ Every agent in the pipeline is bound by the **"Golden Path" Principle**:
 
 ## 🚦 System Health check
 Before starting any agent, ensure the environment is ready:
-- `python -m src.cli.main speckit.doctor` (Structural Check)
+- `speckit doctor` (Structural Check)
 - `speckit validate` (Reference Check)
 
 ---

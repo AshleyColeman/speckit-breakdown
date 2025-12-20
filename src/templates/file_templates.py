@@ -80,7 +80,7 @@ title: "Specification: {feature_name}"
         return """[
   {
     "code": "FEATURE-T001",
-    "feature_code": "feature-code",
+    "feature_code": "example-feature",
     "title": "Task title",
     "status": "pending",
     "task_type": "implementation",

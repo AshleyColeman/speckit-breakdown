@@ -75,7 +75,7 @@ Agents are bound by these ironclad rules:
 
 ### Error: `ERR_INVALID_NAME`
 - **Cause**: A file was created with spaces or uppercase characters.
-- **Fix**: `python -m src.cli.main speckit.validate --fix`.
+- **Fix**: Run `speckit validate --fix`.
 
 ### Error: `db.prepare` Failure
 - **Cause**: `project.md` is missing or the project code doesn't match `speckit.yaml`.
@@ -93,4 +93,4 @@ A task is considered **Finished** only when:
 ---
 
 > [!TIP]
-> **Use the Doctor**: If you feel the environment is unstable, run `python -m src.cli.main speckit.doctor` to verify your foundations.
+> **Use the Doctor**: If you feel the environment is unstable, run `speckit doctor` to verify your foundations.

@@ -27,7 +27,7 @@ graph TD
 
 ### Phase I: Decomposition
 1. **Identify Features**: Read the `MVP.md` and identify core functionalities.
-2. **Execute Breakdown**: Run `python -m speckit.src.cli.main speckit.breakdown MVP.md`.
+2. **Execute Breakdown**: Run `speckit.breakdown MVP.md`.
 3. **Audit Output**: Check `docs/features/` for the generated files.
 
 ### Phase II: Structural Alignment
@@ -43,8 +43,8 @@ graph TD
    ```
 
 ### Phase III: The Final Sync
-1. **Validate**: Run `python -m speckit.src.cli.main speckit.validate`. Fix any duplicate codes or missing fields.
-2. **Sync**: Run `python -m speckit.src.cli.main speckit.db.prepare`.
+1. **Validate**: Run `speckit validate`. Fix any duplicate codes or missing fields.
+2. **Sync**: Run `speckit.db.prepare`.
 
 ---
 

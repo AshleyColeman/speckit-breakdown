@@ -27,18 +27,18 @@ graph TD
 ## 3. Detailed Execution Phases
 
 ### Phase I: Task Generation
-1. **Scaffold Tasks**: Run `python -m speckit.src.cli.main speckit.tasks`. This parses the `implementation_plan.md` and generates a list of "pending" tasks.
+1. **Scaffold Tasks**: Run `speckit.tasks`. This parses the `implementation_plan.md` and generates a list of "pending" tasks.
 2. **Standardize JSON**: Ensure the output is saved as `docs/tasks/tasks.json`.
 
 ### Phase II: Dependency & Parallelization
 1. **Map Dependencies**: For each task in `tasks.json`, identify its prerequisites. 
    - *Example*: `TASK-02` (Add DB Model) depends on `TASK-01` (Setup DB Connection).
    - Use the `dependencies: ["TASK-01"]` field in the JSON.
-2. **Identification of Parallel Siblings**: Run `/speckit.parallelize`. This identifies tasks that share the same dependencies and can be run simultaneously.
+2. **Identification of Parallel Siblings**: Run `speckit.parallelize`. This identifies tasks that share the same dependencies and can be run simultaneously.
 
 ### Phase III: The "Brain" Sync
-1. **Validate Integrity**: Run `python -m speckit.src.cli.main speckit.validate`. Ensure all `feature_code` and `dependency` IDs are valid.
-2. **Calculate Step Order**: Run `python -m speckit.src.cli.main speckit.db.prepare`. 
+1. **Validate Integrity**: Run `speckit validate`. Ensure all `feature_code` and `dependency` IDs are valid.
+2. **Calculate Step Order**: Run `speckit.db.prepare`. 
    - This command performs a **Topological Sort**.
    - It assigns a `step_order` to every task (Step 1, Step 2, etc.).
    - This determines the final **Execution Plan**.

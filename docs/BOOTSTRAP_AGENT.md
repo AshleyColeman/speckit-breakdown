@@ -26,13 +26,13 @@ graph TD
 ## 3. Detailed Execution Phases
 
 ### Phase I: Environment & Core Inheritance
-1. **Pull SpecKit Core**: Ensure the `speckit-breakdown` source is available *inside* the project directory (e.g., in a `speckit/` or `vendor/speckit/` folder). This makes the project standalone.
-   - *Command*: `git submodule add https://github.com/AshleyColeman/speckit-breakdown.git speckit` (or a direct copy).
-2. **Environment Setup**: Create a local virtual environment:
-   - `uv venv` or `python -m venv .venv`
-   - `source .venv/bin/activate`
-   - `pip install -r speckit/requirements.txt`
-3. **Configuration**: Run `python -m speckit.src.cli.main speckit.init --project-name <NAME>`.
+1. **Pull SpecKit Core**: Ensure the `speckit-breakdown` source is available *inside* the project directory.
+   - *Command*: `git submodule add https://github.com/AshleyColeman/speckit-breakdown.git speckit`
+2. **Environment Setup**: Create and activate a local virtual environment:
+   - `python3 -m venv .venv && source .venv/bin/activate`
+3. **Standalone Install**: Install SpecKit in **editable mode** from the local folder. This makes the `speckit` command available globally within the venv while pointing to the local files.
+   - *Command*: `pip install -e ./speckit`
+4. **Configuration**: Run `speckit init --project-name <NAME>`.
 
 ### Phase II: Structural Foundations
 1. **Project Metadata**: Create `docs/project.md` if it doesn't exist.
@@ -49,6 +49,7 @@ graph TD
 1. **Zero Manual Edits**: Always use the CLI or Template Manager to create core files.
 2. **Clean State**: If the environment feels unstable, run `rm -f db.sqlite` and start Phase III again.
 3. **Doctor First**: Never signal "Setup Complete" without a passing `speckit doctor` report.
+4. **Security**: Add `.speckit/` to your `.gitignore` to prevent leaking the local database state.
 
 ---
 

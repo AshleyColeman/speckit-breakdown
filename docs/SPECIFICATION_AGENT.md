@@ -27,16 +27,16 @@ graph TD
 ## 3. Detailed Execution Phases
 
 ### Phase I: The Deep Spec
-1. **Generate Spec**: For each feature, run `python -m speckit.src.cli.main speckit.specify`. 
-2. **Review Integrity**: Run `python -m speckit.src.cli.main speckit.specreview` to check for internal contradictions.
-3. **Clarify**: If there are unknowns, run `python -m speckit.src.cli.main speckit.clarify`.
+1. **Generate Spec**: For each feature, run `speckit.specify`. 
+2. **Review Integrity**: Run `speckit.specreview` to check for internal contradictions.
+3. **Clarify**: If there are unknowns, run `speckit.clarify`.
 
 ### Phase II: Engineering Design
 1. **Define Stack**: Research and select the best tools for the job. Document this in `docs/techstack.md`.
 2. **Define Architecture**: Run `speckit.arch` to document component relationships and data flow.
 
 ### Phase III: Implementation Planning
-1. **Create Plan**: Run `python -m speckit.src.cli.main speckit.plan`. This converts the Spec + Tech Stack into a sequence of implementation steps.
+1. **Create Plan**: Run `speckit.plan`. This converts the Spec + Tech Stack into a sequence of implementation steps.
 2. **Quality Audit**: Ensure the plan is linear and covers both implementation and testing.
 
 ---
